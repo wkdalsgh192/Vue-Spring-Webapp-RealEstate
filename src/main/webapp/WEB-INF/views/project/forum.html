@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Grayscale - Start Bootstrap Theme</title>
+        <link rel="icon" type="image/x-icon" href="${root}/img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="${root}/styles.css" rel="stylesheet" />
+        <link href="${root}/custom.css" rel="stylesheet" />
+	    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <script>
+        $(document).ready(function() {
+            var login_data = {
+                "id" : "ssafy",
+                "pw" : "ssafy"
+        };
+		$("#loginbtn").click(function() {
+			var mid = $("#modalId").val();
+			var mpw = $("#modalPwd").val();
+			if (mid == login_data.id && mpw == login_data.pw) {
+				ch_menu();
+			} else {
+				alert("로그인 정보를 확인하세요");
+			}
+        });
+        
+	});
+	function ch_menu() {
+		$("#navbarManuList").empty();
+		var manu1 = "<li class=\"nav-item\"><a class=\"nav-link js-scroll-trigger\"href=\"board.html\">공지사항</a></li>"
+		var manu2 = "<li class=\"nav-item\"><a class=\"nav-link js-scroll-trigger\"href=\"#\">오늘의 뉴스</a></li>"
+		var manu3 = "<li class=\"nav-item\"><a class=\"nav-link js-scroll-trigger\"href=\"forum.html\">아파트 검색</a></li>"
+		var manu4 = "<li class=\"nav-item\"><a class=\"nav-link js-scroll-trigger\"href=\"forum.html\">동 검색</a></li>"
+		var manu5 = "<li class=\"nav-item\"><a class=\"nav-link js-scroll-trigger\"href=\"settings.html\">마이페이지</a></li>"
+		var manu6 = "<li class=\"nav-item\"><a class=\"nav-link js-scroll-trigger\"href=\"#\" id=\"logout\">로그아웃</a></li>"
+        $("#navbarManuList").append(manu1);
+		$("#navbarManuList").append(manu2);
+		$("#navbarManuList").append(manu3);
+		$("#navbarManuList").append(manu4);
+        $("#navbarManuList").append(manu5);
+		$("#navbarManuList").append(manu6);
+        
+	}
+        </script>
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top"
+            id="mainNav">
+            <div class="container">
+                <a class="navbar-brand js-scroll-trigger" href="index.html">Home</a>
+                <button class="navbar-toggler navbar-toggler-right" type="button"
+                    data-toggle="collapse" data-target="#navbarResponsive"
+                    aria-controls="navbarResponsive" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    Menu <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ml-auto" id="navbarManuList">
+                        <li class="nav-item"><a class="nav-link js-scroll-trigger"
+                            href="" data-toggle="modal" data-target="#singUp">회원가입</a></li>
+                        <li class="nav-item"><a class="nav-link js-scroll-trigger"
+                            href="" data-toggle="modal" data-target="#login">로그인</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <main>
+            <section class="content">
+                <div class="results">
+                    <ul class="nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"><h3>아파트</h3></a>
+                          </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#">거래 정보</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link disabled" href="#">관심 목록</a>
+                        </li>
+                      </ul>
+                    <div class="separator"></div>
+                    <div class="items-list">
+                        <ul class="nav">
+                            <li class="nav-item">
+                                <div class="item-cell">
+                                    <div class="item-cell-img">
+                                        <img src="${root}/img/dogok-raemian.jpg" alt="">
+                                    </div>
+                                    <div class="item-cell-desc">
+                                        <h4>도곡 래미안</h4>
+                                        <p> 거래금액 : 23억 3000만 원<span></span></p>
+                                        <p> 면적 : <span></span></p>
+                                        <p> 최종 수정일 : 2020.09.21<span></span></p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <div class="item-cell">
+                                    <div class="item-cell-img">
+                                        <img src="${root}/img/dogok-palace.jpg" alt="">
+                                    </div>
+                                    <div class="item-cell-desc">
+                                        <h4>도곡 타워팰리스</h4>
+                                        <p> 거래금액 : 29억 원<span></span></p>
+                                        <p> 면적 : 113m2<span></span></p>
+                                        <p> 최종 수정일 : 2020.09.21<span></span></p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <div class="item-cell">
+                                    <div class="item-cell-img">
+                                        <img src="${root}/img/dogok-rexle.jpg" alt="">
+                                    </div>
+                                    <div class="item-cell-desc">
+                                        <h4>도곡 랙슬</h4>
+                                        <p> 거래금액 : 18억 6500만 원<span></span></p>
+                                        <p> 면적 : 59m2<span></span></p>
+                                        <p> 최종 수정일 : 2020.09.21<span></span></p>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div> 
+                </div>
+                <div class="map" id="map"></div>
+            </section>
+        </main>
+        <!-- modal -->
+	<div class="modal fade" id="login">
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title">Login</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="modalId"> ID:</label> <input type="text"
+							class="form-control" placeholder="ID" id="modalId">
+					</div>
+					<div class="form-group">
+						<label for="modalPwd">Password:</label> <input type="password"
+							class="form-control" placeholder="password" id="modalPwd">
+					</div>
+				</div>
+				<!-- Modal footer -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal"
+						id='loginbtn'>Login</button>
+					<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="singUp">
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header" style="">
+					<h4 class="modal-title">SingUp</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="singUpId"> ID:</label> <input type="text"
+							class="form-control" placeholder="ID" id="singUpId">
+					</div>
+					<div class="form-group">
+						<label for="singUpPwd">Password:</label> <input type="password"
+							class="form-control" placeholder="password" id="singUpPwd">
+					</div>
+					<div class="form-group">
+						<label for="resingUpPwd">Password-check:</label> <input type="password"
+							class="form-control" placeholder="password" id="resingUpPwd">
+					</div>
+					<div class="form-group">
+						<label for="singUpEmail">E-mail:</label> <input type="email"
+							class="form-control" placeholder="password" id="singUpEmail">
+					</div>
+				</div>
+				<!-- Modal footer -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">SingUp</button>
+					<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+				</div>
+
+			</div>
+		</div>
+	</div> 
+        
+        
+        <!-- Footer-->
+        <footer class="footer bg-black small text-center text-white-50"><div class="container">Copyright © Your Website 2020</div></footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <script defer src ="https://maps.googleapis.com/maps/api/js?key=AIzaSyD5ago2JSBMKaGQBBssDj6oCIPEsKGVY6o&callback=initMap&libraries=&v=weekly"></script>
+        <!-- Core theme JS-->
+        <script src="./static/global/scripts.js"></script>
+        <script src="./static/forum/custom.js"></script>
+    </body>
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="description" content="" />
+<meta name="author" content="" />
+<title>Grayscale - Start Bootstrap Theme</title>
+<link rel="icon" type="image/x-icon" href="${root}/img/favicon.ico" />
+<!-- Font Awesome icons (free version)-->
+<script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js"
+	crossorigin="anonymous"></script>
+<!-- Google fonts-->
+<link href="https://fonts.googleapis.com/css?family=Varela+Round"
+	rel="stylesheet" />
+<link
+	href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+	rel="stylesheet" />
+<!-- Core theme CSS (includes Bootstrap)-->
+<link href="${root}/global/styles.css" rel="stylesheet"/>
+<!-- google map -->
+<script defer
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyANHmuFg33a00Xxoa3ri4xAq5SNDa2-6q0&callback=initMap">
+	
+</script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+	let map;
+	function initMap() {
+		map = new google.maps.Map(document.getElementById("map"), {
+			center : {
+				lat : 37.5013068,
+				lng : 127.037471
+			},
+			zoom : 17
+		});
+	}
+</script>
+<script>
+	$(document).ready(function() {
+		var login_data = {
+			"id" : "ssafy",
+			"pw" : "ssafy"
+		};
+		$("#loginbtn").click(function() {
+			var mid = $("#modalId").val();
+			var mpw = $("#modalPwd").val();
+			if (mid == login_data.id && mpw == login_data.pw) {
+				ch_menu();
+			} else {
+				alert("로그인 정보를 확인하세요");
+			}
+		});
+		$("#backbtn").click(function() {
+			window.location.href="board.html";		
+		});
+		$("#logout").click(function() {
+			console.log("?");
+			ch_back_menu();
+		});
+	});
+	function ch_menu() {
+		$("#navbarManuList").empty();
+		var manu1 = "<li class=\"nav-item\"><a class=\"nav-link js-scroll-trigger\"href=\"board.html\">공지사항</a></li>"
+		var manu2 = "<li class=\"nav-item\"><a class=\"nav-link js-scroll-trigger\"href=\"#\">오늘의 뉴스</a></li>"
+		var manu3 = "<li class=\"nav-item\"><a class=\"nav-link js-scroll-trigger\"href=\"forum.html\">아파트 검색</a></li>"
+		var manu4 = "<li class=\"nav-item\"><a class=\"nav-link js-scroll-trigger\"href=\"forum.html\">동 검색</a></li>"
+		var manu5 = "<li class=\"nav-item\"><a class=\"nav-link js-scroll-trigger\"href=\"settings.html\">마이페이지</a></li>"
+		var manu6 = "<li class=\"nav-item\"><a class=\"nav-link js-scroll-trigger\"href=\"\" id=\"logout\">로그아웃</a></li>"
+		$("#navbarManuList").append(manu1);
+		$("#navbarManuList").append(manu2);
+		$("#navbarManuList").append(manu3);
+		$("#navbarManuList").append(manu4);
+		$("#navbarManuList").append(manu5);
+		$("#navbarManuList").append(manu6);
+	}
+	function ch_back_menu() {
+		$("#navbarManuList").empty();
+		var manu1 = "<li class=\"nav-item\"><a class=\"nav-link js-scroll-trigger\"href=\"\" data-toggle=\"modal\" data-target=\"#singUp\">회원가입</a></li>"
+		var manu2 = "<li class=\"nav-item\"><a class=\"nav-link js-scroll-trigger\"href=\"\" data-toggle=\"modal\" data-target=\"#login\">로그인</a></li>"
+		$("#navbarManuList").append(manu1);
+		$("#navbarManuList").append(manu2);
+
+	}
+	
+</script>
+<style type="text/css">
+.login {
+	background-color: #f8f9fa;
+}
+
+td {
+	height: 15px;
+}
+</style>
+</head>
+<body id="page-top">
+	<!-- Navigation-->
+	<nav class="navbar navbar-expand-lg navbar-light fixed-top"
+		id="mainNav">
+		<div class="container">
+			<a class="navbar-brand js-scroll-trigger" href="index.html">Home</a>
+			<button class="navbar-toggler navbar-toggler-right" type="button"
+				data-toggle="collapse" data-target="#navbarResponsive"
+				aria-controls="navbarResponsive" aria-expanded="false"
+				aria-label="Toggle navigation">
+				Menu <i class="fas fa-bars"></i>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarResponsive">
+				<ul class="navbar-nav ml-auto" id="navbarManuList">
+					<li class="nav-item"><a class="nav-link js-scroll-trigger"
+						href="" data-toggle="modal" data-target="#singUp">회원가입</a></li>
+					<li class="nav-item"><a class="nav-link js-scroll-trigger"
+						href="" data-toggle="modal" data-target="#login">로그인</a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<!-- Masthead-->
+	<header class="masthead">
+		<div class="container d-flex h-100 align-items-center">
+			<div class="mx-auto text-center">
+				<h1 class="mx-auto my-0 text-uppercase">HAPPY HOUSE</h1>
+				<h2 class="text-white-50 mx-auto mt-2 mb-5">행복한 우리집!</h2>
+				<!-- <a class="btn btn-primary js-scroll-trigger" href="#about">Get Started</a> -->
+			</div>
+		</div>
+	</header>
+	<!-- About-->
+
+	<!-- Projects-->
+	<section class="projects-section bg-light" id="projects">
+
+		<div class="container">
+			<div class="row align-items-center no-gutters mb-4 mb-lg-5">
+				<div class="container-fluid">
+					<!-- filters start -->
+
+
+					<!-- Featured Project Row-->
+					<div class="row align-items-center no-gutters mb-4 mb-lg-5">
+						<div class="col-xl-12 col-lg-7">
+							<!-- map -->
+							<!-- 게시판 -->
+							<h2>글 내용 보기</h2>
+							<table class="table table-dark "
+								style="height: 700px; width: 100%;">
+
+								<tbody style="margin: 3px">
+									<tr rowspan="2">
+										<th colspan="1" >제목</th>
+										<th colspan="6">글번호,글제목</th>
+									</tr>
+									<tr rowspan="2">
+										<th >작성자</th>
+										<td>싸피</td>
+										<th >조회수</th>
+										<td>00</td>
+										<th >작성일</th>
+										<td colspan="2">0000.00.0.</td>
+									</tr>
+									<tr>
+										<td colspan="7" rowspan="2">글내용</td>
+									</tr>
+								</tbody>
+							</table>
+							<button class="btn btn-primary mx-auto" id="backbtn">되돌아가기</button>
+						</div>
+					</div>
+
+
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- modal -->
+	<div class="modal fade" id="login">
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header" style="">
+					<h4 class="modal-title">Login</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="modalId"> ID:</label> <input type="text"
+							class="form-control" placeholder="ID" id="modalId">
+					</div>
+					<div class="form-group">
+						<label for="modalPwd">Password:</label> <input type="password"
+							class="form-control" placeholder="password" id="modalPwd">
+					</div>
+				</div>
+				<!-- Modal footer -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal"
+						id='loginbtn'>Login</button>
+					<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="singUp">
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header" style="">
+					<h4 class="modal-title">SingUp</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="singUpId"> ID:</label> <input type="text"
+							class="form-control" placeholder="ID" id="singUpId">
+					</div>
+					<div class="form-group">
+						<label for="singUpPwd">Password:</label> <input type="password"
+							class="form-control" placeholder="password" id="singUpPwd">
+					</div>
+					<div class="form-group">
+						<label for="resingUpPwd">Password-check:</label> <input
+							type="password" class="form-control" placeholder="password"
+							id="resingUpPwd">
+					</div>
+					<div class="form-group">
+						<label for="singUpEmail">E-mail:</label> <input type="email"
+							class="form-control" placeholder="password" id="singUpEmail">
+					</div>
+				</div>
+				<!-- Modal footer -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">SingUp</button>
+					<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<!-- Footer-->
+	<footer class="footer bg-black small text-center text-white-50">
+		<div class="container">front_end 구미 2반</div>
+		<div class="container">장민호, 김두상</div>
+	</footer>
+	<!-- Bootstrap core JS-->
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script
+		src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+	<!-- Third party plugin JS-->
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+	<!-- Core theme JS-->
+	<script src="js/scripts.js"></script>
+</body>
+</html>

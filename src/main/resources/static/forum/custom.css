@@ -1,0 +1,115 @@
+@charset "UTF-8";
+
+body {
+    height: 100%;
+    overflow:scroll;
+}
+
+main {
+    position:relative;
+    top:88px;
+    height:calc(100% - 88px);
+}
+
+main .main {
+	display:flex;
+}
+
+section {
+    position: relative;
+    display : flex;
+    width: 100%;
+    height: 100%;
+    align-items:flex-start;
+    justify-content: center;
+    padding-top: 3em;
+}
+
+section > div {
+    width: 100%;
+    height: 100%;
+}
+
+/* .results {
+    top: 100px;
+} */
+
+.results .nav,
+.results .separator {
+    width: 80%;
+    margin: 0 auto;
+}
+
+.results > .nav {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+}
+
+.results .nav-link {
+    padding-left: 0;
+}
+
+.results .separator {
+    /* width: 40%; */
+    border: 1px solid gray;
+}
+
+.items-list {
+    padding-top: 2em;
+}
+
+.items-list > .nav {
+    display: block;
+}
+
+.item-cell {
+    height: 100%;
+    margin-bottom: 2em;
+}
+
+.item-cell {
+    display: flex;
+}
+
+.item-cell-img {
+    width: 40%;
+    height: 180px;
+    margin-right: 1em;
+    overflow: hidden;
+}
+
+.item-cell-img img {
+    width: 100%;
+    height: 180px;
+}
+
+.item-cell-desc {
+    top:0;
+    width: 60%;
+    height: 180px;
+    vertical-align: top;
+    display: flex;
+    flex-direction:column;
+    justify-content: space-between;
+    padding: 1rem 0; 
+}
+
+.item-cell-desc p {
+    margin: 0;
+}
+
+/* 구글 맵 디자인 */
+.content .global-search {padding: 1rem;}
+/* .global-search select {display:none;} */
+.content .card {border:none;}
+.map {
+    height: 600px;
+}
+
+.footer {
+    margin-top: 200px;
+}
+
+
+
