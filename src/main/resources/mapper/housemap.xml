@@ -10,16 +10,16 @@
 	    <![CDATA[SELECT gugun_code, gugun_name FROM guguncode WHERE SUBSTRING(gugun_code,1,2) = #{sido} ORDER BY gugun_name]]>
 	</select>
 	
-	<select id="getDongInGugun" resultType="houseinfo" parameterType="string">
-	    <![CDATA[SELECT distinct dong FROM dongcode where gugun = #{gugun} ORDER BY dong]]>
+	<select id="getDongInGugun" resultType="HashMap" parameterType="string">
+	    <![CDATA[SELECT distinct dong, dongcode FROM dongcode WHERE substring(dongcode, 1, 5) = #{gugun} ORDER BY dong]]>
 	</select>
 
 	<select id="getAptInDong" resultType="houseinfo" parameterType="String">
-	    <![CDATA[SELECT no,dong,code,AptName,jibun FROM houseinfo WHERE code = #{code} ORDER BY AptName]]>
+	    <![CDATA[SELECT no,dong,code,AptName,jibun,lat,lng FROM houseinfo WHERE code = #{dongcode} ORDER BY AptName]]>
 	</select>
 	  
-	<select id="getDealInDong" resultType="housedeal" parameterType="Map">
-	    <![CDATA[SELECT no,dong,code,AptName, dealAmount, area, jibun FROM housedeal WHERE ${code} = #{code} and ${AptName} = #{AptName} ORDER BY AptName]]>
+	<select id="getDealInDong" resultType="housedeal" parameterType="String">
+	    <![CDATA[SELECT no,dong,code,AptName, dealAmount, area, jibun FROM housedeal WHERE code = #{dongcode} ORDER BY AptName]]>
 	</select>
 
 </mapper>

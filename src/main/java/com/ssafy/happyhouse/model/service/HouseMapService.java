@@ -1,5 +1,6 @@
 package com.ssafy.happyhouse.model.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.ssafy.happyhouse.model.GugunDto;
@@ -11,8 +12,8 @@ public interface HouseMapService {
 	
 	List<SidoDto> getSido() throws Exception;
 	List<GugunDto> getGugunInSido(String sido) throws Exception;
-	List<HouseInfoDto> getDongInGugun(String gugun) throws Exception;
-	List<HouseInfoDto> getAptInDong(String dong) throws Exception;
-	List<HouseDealDto> getDealInDong(int code, String aptName) throws Exception;
+	List<HashMap<String, Object>> getDongInGugun(String gugun) throws Exception;
+	List<HouseInfoDto> getAptInDong(String dongcode) throws Exception;
+	List<HouseDealDto> getDealInDong(String dongcode) throws Exception;
 	
 }

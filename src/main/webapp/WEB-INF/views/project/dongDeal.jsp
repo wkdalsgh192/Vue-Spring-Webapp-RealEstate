@@ -21,10 +21,75 @@
         <link href="${root}/global/styles.css" rel="stylesheet" />
         <link href="${root}/forum/custom.css" rel="stylesheet" />
 	    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=123cf81f3fe1f9fbdcaf7be8ef5d58b7&libraries=services,clusterer,drawing"></script>
+		<%-- <script src="${root}/forum/call-address.js"></script> --%>
 		<script>
-		function loginfail(msg) {
-			alert(msg);
-		}
+			let param;
+			let colorArr = ['table-primary','table-success','table-danger'];
+			$(document).ready(function(){
+				$.get("${root}/map/address"
+					,function(data, status){
+						console.log(data);
+						$.each(data, function(index, vo) {
+							$("#sido").append("<option value='"+vo.sidoCode+"'>"+vo.sidoName+"</option>");
+						});//each
+					}//function
+					, "json"
+				);//get
+				$("#sido").change(function() {
+					param = $("#sido").val();
+					param = param.substring(0,2);
+					$.get("${root}/map/address/sido/"+param
+							,function(data, status){
+								$("#gugun").empty();
+								$("#gugun").append('<option value="0">선택</option>');
+								$.each(data, function(index, vo) {
+									$("#gugun").append("<option value='"+vo.gugunCode+"'>"+vo.gugunName+"</option>");
+								});//each
+							}//function
+							, "json"
+					);//get
+				});//change
+				$("#gugun").change(function() {
+					param = $("#gugun").val().substring(0,5);
+					$.get("${root}/map/address/gugun/"+param
+							,{gugun:param}
+							,function(data, status){
+								$("#dong").empty();
+								$("#dong").append('<option value="0">선택</option>');
+								$.each(data, function(index, vo) {
+									$("#dong").append("<option value='"+vo["dongcode"]+"'>"+vo["dong"]+"</option>");
+								});//each
+							}//function
+							, "json"
+					);//get
+				});//change
+				$("#dong").change(function() {
+					param = $("#dong").val();
+					console.log("param : "+param);
+					$.get("${root}/map/house/info/"+param
+						,{dongcode:param}
+						, function(data, status) {
+							const arr = new Array();
+							$(".item-block").empty();
+							$.each(data, function(index, vo) {
+								var obj = {'x': vo.lat, 'y': vo.lng};
+								arr.push(obj);
+								/* $(".item-block").append('<div class="item-cell"')
+								$(".item-block").append('<div class="item-cell-img"')
+								$(".item-block").append('<img src="${root}/img/dogok-raemian.jpg">'+'</div>')
+								$(".item-block").append('<div class="item-cell-desc"')
+								$(".item-block").append('<h4><a class="item-title" href="${root}/map?act=deal&dongcode=vo.code&aptname=vo.aptName"}>'+vo.aptName+'</a><h4>')
+								$(".item-block").append('<p> 건축년도 : '+vo.builtYear + ' 천 원</p>')
+								$(".item-block").append('<p> 면적 : <span>' + vo.area + ' </span> </p>')
+								$(".item-block").append('<p> 최종 수정일 : <span>'+'</span></p>') */
+							})
+							renewMap(arr);
+						}
+						, "json"
+					);
+				});//change
+			});//ready
 		</script>
     </head>
     <body id="page-top">
@@ -63,7 +128,19 @@
             </div>
         </nav>
         <main>
-        	<div class="container main">
+	            
+        	<div class="map" id="map" style="width: 100%; height: 1000px; margin: auto;"></div>
+        	<section class="content">
+	            	<div class="card col-sm-12 mt-1" style="max-height: 400px;">
+	            		<div class="global-search">
+	            			시도 : <select id="sido" name="sido"><option value="0">선택</option></select>
+            				구군 : <select id="gugun" name="gugun"><option value="0">선택</option></select>
+            				읍면동 : <select id="dong" name="dong"><option value="0">선택</option></select>
+	            		</div>
+	            	</div>
+            </section>
+<%--         	<div class="container main">
+	       		
             	<section class="content">
 	                <div class="results">
 	                    <ul class="nav">
@@ -97,79 +174,9 @@
 	                    </div>
 	                </div>
 	            </section>
-	            <section class="content">
-	            	<div class="card col-sm-12 mt-1" style="max-height: 400px;">
-	            		<script type="text/javascript">
-	            		let colorArr = ['table-primary','table-success','table-danger'];
-	            		$(document).ready(function(){
-	            			$.get("${root}/map/address"
-	            				,function(data, status){
-	            					console.log(data);
-	            					$.each(data, function(index, vo) {
-	            						$("#sido").append("<option value='"+vo.sidoCode+"'>"+vo.sidoName+"</option>");
-	            					});//each
-	            				}//function
-	            				, "json"
-	            			);//get
-	            		});//ready
-	            		$(document).ready(function(){
-	            			$("#sido").change(function() {
-	            				console.log(1);
-	            				let param = $("#sido").val();
-	            				console.log(param);
-	            				param = param.substring(0,2);
-	            				console.log(param);
-	            				$.get("${root}/map/address/sido/"+param
-	            						,function(data, status){
-	            							$("#gugun").empty();
-	            							$("#gugun").append('<option value="0">선택</option>');
-	            							$.each(data, function(index, vo) {
-	            								$("#gugun").append("<option value='"+vo.gugunCode+"'>"+vo.gugunName+"</option>");
-	            							});//each
-	            						}//function
-	            						, "json"
-	            				);//get
-	            			});//change
-	            			$("#gugun").change(function() {
-	            				console.log(2);
-	            				let param = $("#gugun").val();
-	            				console.log(param);
-	            				param = param.substring(0,5);
-	            				console.log(param);
-	            				$.get("${root}/map/address/gugun/"+param
-	            						,{gugun:param}
-	            						,function(data, status){
-	            							$("#dong").empty();
-	            							$("#dong").append('<option value="0">선택</option>');
-	            							$.each(data, function(index, vo) {
-	            								$("#dong").append("<option value='"+vo.dongcode+"'>"+vo.dong+"</option>");
-	            							});//each
-	            						}//function
-	            						, "json"
-	            				);//get
-	            			});//change
-	            			$("#dong").change(function() {
-		            				$("#searchForm").submit();
-		            				console.log($("#searchForm"));
-	 	            				$("#searchForm").focus();
-	            			});//change
-	            		});//ready
-	            		
-	            		</script>
-	            		<div class="global-search">
-	            			<form method='post' action="${root}/map" name="searchForm" id="searchForm">
-	            				<input type="hidden" name="act" id="act" value="deal">
-	            				시도 : <select id="sido" name="sido"><option value="0">선택</option></select>
-	            				구군 : <select id="gugun" name="gugun"><option value="0">선택</option></select>
-	            				읍면동 : <select id="dong" name="dong"><option value="0">선택</option></select>
-	            			</form>
-	            		</div>
-	            		
-						<div class="map" id="map" style="width: 100%; height: 500px; margin: auto;"></div>
-	            	
-	            	</div>
-	            </section>
-        	</div>
+	            
+
+        	</div> --%>
         </main>
         <!-- Footer-->
         <footer class="footer bg-black small text-center text-white-50"><div class="container">Copyright © Your Website 2020</div></footer>
@@ -178,10 +185,11 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
         <!-- Third party plugin JS-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
-        <script src="https://unpkg.com/@google/markerclustererplus@4.0.1/dist/markerclustererplus.min.js"></script>
-        <script defer src ="https://maps.googleapis.com/maps/api/js?key=AIzaSyD5ago2JSBMKaGQBBssDj6oCIPEsKGVY6o&callback=initMap&libraries=&v=weekly"></script>
+        <!-- <script src="https://unpkg.com/@google/markerclustererplus@4.0.1/dist/markerclustererplus.min.js"></script>
+        <script defer src ="https://maps.googleapis.com/maps/api/js?key=AIzaSyD5ago2JSBMKaGQBBssDj6oCIPEsKGVY6o&callback=initMap&libraries=&v=weekly"></script> -->
         <!-- Core theme JS-->
-        <script src="${root}/static/global/scripts.js"></script>
-        <script src="${root}/static/forum/custom.js"></script>
+        <script src="${root}/global/scripts.js"></script>
+        <script src="${root}/forum/kakaomap.js"></script>
+        
     </body>
 </html>

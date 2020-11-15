@@ -1,6 +1,5 @@
 
 //검색 결과 불러오기
-
 function geocode(jsonData) {
 	let idx = 0;
 	deleteMarkers();

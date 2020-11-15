@@ -23,40 +23,37 @@ public class HouseMapServiceImpl implements HouseMapService {
 	@Override
 	public List<SidoDto> getSido() throws Exception {
 		List<SidoDto> list = sqlSession.getMapper(HouseMapMapper.class).getSido();
-		System.out.println(list.size());
-		System.out.println(list.get(0).getSidoCode());
-		System.out.println("*************************");
 		return list;
 	}
 
 	@Override
 	public List<GugunDto> getGugunInSido(String sido) throws Exception {
 		List<GugunDto> list = sqlSession.getMapper(HouseMapMapper.class).getGugunInSido(sido);
-		System.out.println("*************************");
-		System.out.println(sido);
-		System.out.println(sqlSession.getMapper(HouseMapMapper.class).getGugunInSido(sido));
-		System.out.println(list.size());
-		System.out.println(list.get(0));
-		System.out.println("*************************");
 		return list;
 	}
 
 	@Override
-	public List<HouseInfoDto> getDongInGugun(String gugun) throws Exception {
-		return sqlSession.getMapper(HouseMapMapper.class).getDongInGugun(gugun);
+	public List<HashMap<String, Object>> getDongInGugun(String gugun) throws Exception {
+		List<HashMap<String, Object>> list = sqlSession.getMapper(HouseMapMapper.class).getDongInGugun(gugun);
+		return list;
 	}
 
 	@Override
-	public List<HouseInfoDto> getAptInDong(String dong) throws Exception {
-		return sqlSession.getMapper(HouseMapMapper.class).getAptInDong(dong);
+	public List<HouseInfoDto> getAptInDong(String dongcode) throws Exception {
+		return sqlSession.getMapper(HouseMapMapper.class).getAptInDong(dongcode);
+	}
+	
+	@Override
+	public List<HouseDealDto> getDealInDong(String dongcode) throws Exception {
+		return sqlSession.getMapper(HouseMapMapper.class).getDealInDong(dongcode);
 	}
 
-	@Override
-	public List<HouseDealDto> getDealInDong(int code, String aptName) throws Exception {
-		Map<String,Object> map = new HashMap<>();
-        map.put("code", code);
-        map.put("AptName", aptName);
-		return sqlSession.getMapper(HouseMapMapper.class).getDealInDong(map);
-	}
+//	@Override
+//	public List<HouseDealDto> getDealInDong(int code, String aptName) throws Exception {
+//		Map<String,Object> map = new HashMap<>();
+//        map.put("code", code);
+//        map.put("AptName", aptName);
+//		return sqlSession.getMapper(HouseMapMapper.class).getDealInDong(map);
+//	}
 
 }

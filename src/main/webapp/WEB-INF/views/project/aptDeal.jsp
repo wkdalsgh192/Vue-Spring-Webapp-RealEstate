@@ -165,8 +165,8 @@
 					<div class="global-search">
 						<form method='post' action="${root}/map" name="searchForm"
 							id="searchForm">
-							<input type="hidden" name="act" id="act" value="deal"> 시도
-							: <select id="sido" name="sido"><option value="0">선택</option></select>
+							<input type="hidden" name="act" id="act" value="deal"> 
+							시도 : <select id="sido" name="sido"><option value="0">선택</option></select>
 							구군 : <select id="gugun" name="gugun"><option value="0">선택</option></select>
 							읍면동 : <select id="dong" name="dong"><option value="0">선택</option></select>
 						</form>

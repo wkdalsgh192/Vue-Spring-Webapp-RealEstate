@@ -1,6 +1,7 @@
 package com.ssafy.happyhouse.controller;
 
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServlet;
@@ -32,18 +33,22 @@ public class HouseMapController extends HttpServlet {
 	
 	@GetMapping(value="/address/sido/{sido}", headers= {"Content-type=application/json"})
 	public List<GugunDto> searchGugun(@PathVariable("sido") String sido) throws Exception {
-		System.out.println(sido);
 		return houseMapService.getGugunInSido(sido);
 	}
 	
 	@GetMapping(value="/address/gugun/{gugun}", headers= {"Content-type=application/json"})
-	public List<HouseInfoDto> searchDong(@PathVariable("gugun") String gugun) throws Exception {
+	public List<HashMap<String, Object>> searchDong(@PathVariable("gugun") String gugun) throws Exception {
 		return houseMapService.getDongInGugun(gugun);
 	}
 	
-	@GetMapping(value="/house/info/{dong}", headers= {"Content-type=application/json"})
-	public List<HouseInfoDto> searchApt(@PathVariable("dong") String dong) throws Exception {
-		return houseMapService.getAptInDong(dong);
+	@GetMapping(value="/house/deal/{dongcode}", headers= {"Content-type=application/json"})
+	public List<HouseDealDto> searchDongName(@PathVariable("dongcode") String dongcode) throws Exception {
+		return houseMapService.getDealInDong(dongcode);
+	}
+	
+	@GetMapping(value="/house/info/{dongcode}", headers= {"Content-type=application/json"})
+	public List<HouseInfoDto> searchApt(@PathVariable("dongcode") String dongcode) throws Exception {
+		return houseMapService.getAptInDong(dongcode);
 	}
 	
 //	@GetMapping(value="/house/deal", headers={"Content-type=application/json"})
