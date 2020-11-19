@@ -48,6 +48,11 @@ public class HouseMapServiceImpl implements HouseMapService {
 		return sqlSession.getMapper(HouseMapMapper.class).getDealInDong(dongcode);
 	}
 
+	@Override
+	public List<HouseInfoDto> searchApt(String address) throws Exception {
+		return sqlSession.getMapper(HouseMapMapper.class).searchApt(address);
+	}
+
 //	@Override
 //	public List<HouseDealDto> getDealInDong(int code, String aptName) throws Exception {
 //		Map<String,Object> map = new HashMap<>();

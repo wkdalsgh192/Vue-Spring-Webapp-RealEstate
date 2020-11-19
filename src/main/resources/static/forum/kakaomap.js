@@ -37,7 +37,7 @@ function setCenter(lat, lng) {
     var moveLatLon = new kakao.maps.LatLng(lat, lng);
     
     // 맵 다시 그리기
-    setTimeout(function(){ map.relayout(); }, 1000);
+    setTimeout(function(){ map.relayout();}, 1000);
     // 지도 중심을 이동 시킵니다
     map.setCenter(moveLatLon);
 }

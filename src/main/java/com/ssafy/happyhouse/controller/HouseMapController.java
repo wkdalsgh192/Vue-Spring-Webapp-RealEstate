@@ -46,9 +46,15 @@ public class HouseMapController extends HttpServlet {
 		return houseMapService.getDealInDong(dongcode);
 	}
 	
-	@GetMapping(value="/house/info/{dongcode}", headers= {"Content-type=application/json"})
-	public List<HouseInfoDto> searchApt(@PathVariable("dongcode") String dongcode) throws Exception {
-		return houseMapService.getAptInDong(dongcode);
+//	@GetMapping(value="/house/info/{dongcode}", headers= {"Content-type=application/json"})
+//	public List<HouseInfoDto> searchApt(@PathVariable("dongcode") String dongcode) throws Exception {
+//		return houseMapService.getAptInDong(dongcode);
+//	}
+	
+	@GetMapping(value="/house/info/{address}", headers= {"Content-type=application/json"})
+	public List<HouseInfoDto> searchApt(@PathVariable("address") String address) throws Exception {
+		System.out.println(address);
+		return houseMapService.searchApt('%'+address+'%');
 	}
 	
 //	@GetMapping(value="/house/deal", headers={"Content-type=application/json"})
