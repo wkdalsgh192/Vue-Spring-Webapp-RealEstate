@@ -15,9 +15,10 @@
         <v-container>
           <v-row>
             <v-col cols="10">
-              <!-- <v-text-field outlined clearable label="Search" type="text">
-              </v-text-field> -->
-              <v-autocomplete
+              <v-text-field outlined clearable label="Search" type="text" v-model="temp">
+              </v-text-field>
+              <!-- autocomplete는 two-bindings가 안됨 -->
+              <!-- <v-autocomplete
                 chips
                 clearable
                 hide-details
@@ -26,7 +27,10 @@
                 item-value="symbol"
                 label="검색할 내용을 입력해주세요..."
                 solo
-              >
+                ref="autocomplete"
+                v-model="keyword"
+                @click="getKeyword"
+              > -->
                 <template v-slot:no-data>
                   <v-list-item>
                     <v-list-item-title>
@@ -38,10 +42,10 @@
                     </v-list-item-title>
                   </v-list-item>
                 </template>
-              </v-autocomplete>
+              <!-- </v-autocomplete> -->
             </v-col>
             <v-col cols="2">
-              <v-btn large color="indigo darken-3" dark>
+              <v-btn large color="indigo darken-3" dark @click="getKeyword">
                 <v-icon>mdi-arrow-right-bold-circle-outline</v-icon>
               </v-btn>
             </v-col>
@@ -51,6 +55,36 @@
     </div>
   </div>
 </template>
+
+<script>
+import index from '../store';
+import {SET_KEYWORD} from '../store';
+export default {
+  index,
+  data() {
+    return {
+      temp : '',
+      isEmpty : false,
+    }
+  },
+  computed : { // 빈 칸이면 false
+    computeLength() {
+      return this.keyword.length === 0 ? false : true;
+    },
+    keyword() {
+      return this.$store.state.keyword;
+    }
+  },
+  methods : {
+    getKeyword() {
+      if (!this.isEmpty) {
+        this.$store.commit(SET_KEYWORD, this.temp);
+        this.$router.replace('/search'); 
+      }
+    }
+  }
+}
+</script>
 
 <style scoped>
 #h2 {
