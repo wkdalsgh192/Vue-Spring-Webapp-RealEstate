@@ -103,6 +103,7 @@ section > div {
     flex-direction:column;
     justify-content: space-between;
     padding: 1rem 0; 
+    padding: 1rem 1;
 }
 
 .item-cell-desc p {
