@@ -15,7 +15,7 @@
         <v-container>
           <v-row>
             <v-col cols="10">
-              <v-text-field outlined clearable label="Search" type="text" v-model="temp">
+              <v-text-field outlined clearable label="Search" type="text" v-model="temp" @keydown.enter="getKeyword">
               </v-text-field>
               <!-- autocomplete는 two-bindings가 안됨 -->
               <!-- <v-autocomplete
@@ -58,7 +58,7 @@
 
 <script>
 import index from '../store';
-import {SET_KEYWORD} from '../store';
+// import {SET_KEYWORD} from '../store';
 export default {
   index,
   data() {
@@ -77,9 +77,9 @@ export default {
   },
   methods : {
     getKeyword() {
+      console.log(1);
       if (!this.isEmpty) {
-        this.$store.commit(SET_KEYWORD, this.temp);
-        this.$router.replace('/search'); 
+        this.$store.dispatch("GET_KEYWORD", {keyword: this.temp, url: '/search'});
       }
     }
   }

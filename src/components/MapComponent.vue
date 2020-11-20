@@ -1,8 +1,18 @@
 <template>
     <div>
+        <div id="seg">
+            <div class="item-cell" v-for="result in results" :key="result.no">
+                <div class="item-cell-img"><img src="@/assets/dogok-raemian.jpg"></div>
+                <div class="item-cell-desc">
+                    <h4><a class="item-title" href="#">{{ result.aptName }}</a></h4>
+                    <p> 거래금액 : 60억 원</p>
+                    <p> 면적 : <span> </span> </p>
+                    <p> 최종 수정일 : <span>2020.11.16</span> </p>
+                </div>
+            </div>
+        </div>
         <div class="map" id="map" style="width: 100%; height: 1000px; margin: auto;">
             <v-toolbar
-            min-width="400px"
             dense
             floating
             style="z-index: 10;"
@@ -11,16 +21,19 @@
                     hide-details
                     prepend-icon="mdi-magnify"
                     single-line
+                    v-model="keyword"
+                    @keydown.enter="getKeyword('')"
                 ></v-text-field>
 
-                <!-- <v-btn icon>
+                <v-btn icon>
                     <v-icon>mdi-crosshairs-gps</v-icon>
                 </v-btn>
 
                 <v-btn icon>
                     <v-icon>mdi-dots-vertical</v-icon>
-                </v-btn> -->
+                </v-btn>
             </v-toolbar>
+            
         </div>
     </div>
 </template>
@@ -28,12 +41,12 @@
 <script>
 import index from '../store';
 import axios from "axios";
-
 export default {
     index,
     data() {
         return {
-
+            keyword: '',
+            results : new Array(),
         }
     },
     mounted() {
@@ -54,7 +67,7 @@ export default {
             var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
                 mapOption = {
                     center: new kakao.maps.LatLng(lat, lng), // 지도의 중심좌표
-                    level: 6 // 지도의 확대 레벨
+                    level: 5 // 지도의 확대 레벨
                 };
             return new kakao.maps.Map(mapContainer, mapOption);
         },
@@ -75,11 +88,16 @@ export default {
             const strArr = this.$store.state.keyword.split(' ');
             const sKey = strArr.splice(strArr.length-1,1)[0];
             const sWord = strArr.join(' ');
-            console.log(sKey, sWord);
+            // 백엔드로 검색어를 보내주는 부분
             if ('아파트' === sKey) {
                 axios.get('http://localhost:8000/happyhouse/map/house/info/'+sWord)
                 .then((response) => {
+                    // 결과 데이터를 받아옴
                     console.log(response.data);
+                    // 결과 데이터를 저장
+                    for (let index = 0; index < response.data.length; index++) {
+                        this.results.push(response.data[index]);
+                    }
                     this.renewMap(response.data);                 
                 })
             }
@@ -93,7 +111,6 @@ export default {
                     lat = vo['lat'], lng=vo['lng'];
                     
                     positions.push({'latlng' : new kakao.maps.LatLng(lat, lng)});
-                    console.log(lat+" "+lng);
                 });
 
                 // setTimeout(function(){ map.relayout();}, 1000);
@@ -120,6 +137,11 @@ export default {
                     image : markerImage // 마커 이미지 
                 });
 	        }
+        },
+        getKeyword(url) {
+            console.log('keyword : ', this.keyword);
+            this.$store.dispatch("GET_KEYWORD", {keyword: this.keyword, url: url});
+            this.callData();
         }
 
     }
@@ -127,5 +149,55 @@ export default {
 </script>
 
 <style>
+    #seg {
+        position: fixed;
+        width: 400px;
+        height: 100vh;
+        z-index: 10;
+        background-color:white;
+        opacity: 0.7;
+        overflow:scroll
+    }
 
+    .item-cell {
+        display: flex;
+        padding: 1rem;
+        height: 12rem;
+    }
+
+    .item-cell-img {
+        width: 40%;
+        height: 100%;
+        margin-right: 1em;
+        overflow: hidden;
+    }
+
+    .item-cell-img img {
+        width: 100%;
+        height: 100%;
+    }
+
+    .item-cell-desc {
+        top:0;
+        width: 60%;
+        height: 180px;
+        vertical-align: top;
+        display: flex;
+        flex-direction:column;
+        justify-content: space-between;
+        padding: 1rem 0; 
+    }
+
+    .item-title {
+        font-size: 1.4rem;
+        font-weight: bolder;
+        text-decoration: none;
+        color: black;
+        overflow-x: hidden;
+    }
+
+    .item-cell-desc p {
+        margin: 0;
+        font-weight: 600;
+    }
 </style>
