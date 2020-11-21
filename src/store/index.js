@@ -1,12 +1,14 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
+export const SET_KEYWORD = 'SET_KEYWORD';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
     accessToken: null,
-    id: ""
+    id: "",
+    keyword: ''
   },
   getters: {
     getAccessToken(state) {
@@ -24,7 +26,10 @@ export default new Vuex.Store({
     LOGOUT(state) {
       state.accessToken = null;
       state.id = "";
-    }
+    },
+    [SET_KEYWORD](state, keyword) { 
+      state.keyword = keyword;
+    },
   },
   actions: {
     LOGIN(context, user) {
@@ -40,7 +45,13 @@ export default new Vuex.Store({
     LOGOUT(context) {
       context.commit("LOGOUT");
       axios.defaults.headers.common["auth-token"] = undefined;
-    }
+    },
+    GET_KEYWORD(context, payload) {
+      context.commit(SET_KEYWORD, payload.keyword);
+      // console.log(payload);
+      if (payload.url === "") return;
+      router.push(payload.url);
+    },
   },
   modules: {}
 });

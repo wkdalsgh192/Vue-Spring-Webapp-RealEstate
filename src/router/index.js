@@ -5,7 +5,10 @@ import Member from "../views/Member.vue";
 import Board from "../views/Board.vue";
 import Detail from "../views/Detail.vue";
 import Write from "../views/Write.vue";
+import SearchResult from "../views/SearchResult.vue";
+
 Vue.use(VueRouter);
+
 const routes = [
   {
     path: "/",
@@ -32,6 +35,11 @@ const routes = [
     name: "write",
     component: Write,
   },
+  {
+    path: "/search",
+    name: "Search",
+    component: SearchResult
+  }
 ];
 
 const router = new VueRouter({
