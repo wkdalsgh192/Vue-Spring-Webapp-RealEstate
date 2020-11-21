@@ -1,13 +1,15 @@
 package com.ssafy.happyhouse.model;
 
 public class NoticeDto {
-	private String no;
+	private int no;
 	private String title;
 	private String date;
-	public String getNo() {
+	private String content;
+	private String member_id;
+	public int getNo() {
 		return no;
 	}
-	public void setNo(String no) {
+	public void setNo(int no) {
 		this.no = no;
 	}
 	public String getTitle() {
@@ -22,8 +24,22 @@ public class NoticeDto {
 	public void setDate(String date) {
 		this.date = date;
 	}
+	public String getContent() {
+		return content;
+	}
+	public void setContent(String content) {
+		this.content = content;
+	}
+	public String getMember_id() {
+		return member_id;
+	}
+	public void setMember_id(String member_id) {
+		this.member_id = member_id;
+	}
 	@Override
 	public String toString() {
-		return "NoticeDto [no=" + no + ", title=" + title + ", date=" + date + "]";
+		return "NoticeDto [no=" + no + ", title=" + title + ", date=" + date + ", content=" + content + ", member_id="
+				+ member_id + "]";
 	}
+	
 }
