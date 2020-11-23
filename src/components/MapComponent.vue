@@ -1,8 +1,16 @@
 <template>
     <div>
         <div id="seg">
-            <div class="item-cell" v-for="result in results" :key="result.no">
-                <div class="item-cell-img"><img src="@/assets/dogok-raemian.jpg"></div>
+            <div class="item-cell" v-for="(result, index) in results" :key="result.no">
+                <div class="item-cell-img">
+                    <v-icon 
+                        :class="{'item-icon': true}" 
+                        @click="applyEffect"
+                    >mdi-heart</v-icon>
+                    <div class></div>
+                    <img :src="'./img/'+index%11+'.jpg'">
+                    <!-- <img src="@/assets/0.jpg"> -->
+                    </div>
                 <div class="item-cell-desc">
                     <h4><a class="item-title" href="#">{{ result.aptName }}</a></h4>
                     <p> 거래금액 : 60억 원</p>
@@ -21,6 +29,7 @@
                     hide-details
                     prepend-icon="mdi-magnify"
                     single-line
+                    id="searchField"
                     v-model="keyword"
                     @keydown.enter="getKeyword('')"
                 ></v-text-field>
@@ -33,15 +42,43 @@
                     <v-icon>mdi-dots-vertical</v-icon>
                 </v-btn>
             </v-toolbar>
-            
         </div>
     </div>
 </template>
 
+
+
 <script>
-import index from '../store';
+import index, { SET_LATLNG } from '../store';
 import axios from "axios";
+// function displayCenterInfo(result, status) {
+//     if (status === kakao.maps.services.Status.OK) {
+//         let dispDiv = document.getElementById('searchField');
+//         for (let index = 0; index < result.length; index++) {
+//             if (result[index].region_type === 'H') {
+//                 // 동에서 숫자 지우기
+//                 let si = result[index].region_1depth_name;
+//                 let gugun = result[index].region_2depth_name;
+//                 let dong = result[index].region_3depth_name;
+//                 let arr = dong.split("");
+//                 for (let j = 0; j < arr.length; j++) {
+//                     if (isNaN(arr[j])) continue;
+//                     arr.splice(j)
+//                     dong = arr.join('')
+//                 }
+
+//                 let newAddress = si+" "+gugun+" "+dong;
+//                 dispDiv.value = newAddress;
+//                 // console.log(this.keyword);
+//                 break;
+//             }
+//         }
+//         console.log(document.getElementById('searchField').value+"/");   
+//     }
+// }
+
 export default {
+    
     index,
     data() {
         return {
@@ -63,6 +100,10 @@ export default {
         
     },
     methods : {
+        applyEffect(e) {
+            console.log(e.target);
+            e.target.style.animation= "moveUp 0.8s ease";
+        },
         getMap(lat, lng) {
             var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
                 mapOption = {
@@ -85,14 +126,17 @@ export default {
         },
         callData() {
             // keyword를 vuex에서 가져와서 axios로 보내준다.
-            const strArr = this.$store.state.keyword.split(' ');
-            const sKey = strArr.splice(strArr.length-1,1)[0];
-            const sWord = strArr.join(' ');
+            const sWord = this.$store.state.keyword;
+            this.keyword = sWord;
+            console.log(sWord);
+            // const strArr = this.$store.state.keyword.split(' ');
+            // const sKey = strArr.splice(strArr.length-1,1)[0];
+            // const sWord = strArr.join(' ');
             // 백엔드로 검색어를 보내주는 부분
-            if ('아파트' === sKey) {
-                axios.get('http://localhost:8000/happyhouse/map/house/info/'+sWord)
+            axios.get('http://localhost:8000/happyhouse/map/house/info/'+sWord)
                 .then((response) => {
                     // 결과 데이터를 받아옴
+                    console.log("hello");
                     console.log(response.data);
                     // 결과 데이터를 저장
                     for (let index = 0; index < response.data.length; index++) {
@@ -100,7 +144,6 @@ export default {
                     }
                     this.renewMap(response.data);                 
                 })
-            }
         },
         renewMap(data) {
             // kakao.maps 가 로드되기 전에 kakao.maps method가 호출되면 에러가 난다.
@@ -113,11 +156,72 @@ export default {
                     positions.push({'latlng' : new kakao.maps.LatLng(lat, lng)});
                 });
 
-                // setTimeout(function(){ map.relayout();}, 1000);
+                this.$store.commit(SET_LATLNG, [lat, lng]);
+                var map = this.getMap(lat, lng);
+                this.drawMarker(positions, map);
+
+                this.addDrag(map);
+            })
+        },
+        getKeyword : function(url) {
+            console.log("1번"+this.keyword);
+            
+            this.$store.dispatch("GET_KEYWORD", {keyword: this.keyword, url: url});
+            this.callData();
+        },
+        addDrag(map) {
+            // 비동기 처리로 인해서 값을 가지고 오지 못한다. => Promise 사용
+            let latlng = null;
+            let geocoder = new kakao.maps.services.Geocoder();
+            console.log(this);
+            let that = this;
+            kakao.maps.event.addListener(map, 'dragend', function() {
+                latlng = map.getCenter();
                 
-                    var map = this.getMap(lat, lng);
-                    this.drawMarker(positions, map);
-            })            
+                // geocoder.coord2RegionCode(latlng.getLng(), latlng.getLat(), displayCenterInfo);
+                console.log(this);
+                const addressSearch = latlng => {
+                    return new Promise((resolve, reject) => {
+                        geocoder.coord2RegionCode(latlng.getLng(), latlng.getLat(), function(result, status) {
+                            if (status === kakao.maps.services.Status.OK) {
+                               
+                                resolve(result);
+                            } else {
+                                reject(status);
+                            }
+                        });
+                    })
+                }
+                (async () => {
+                    try {
+                        const result = await addressSearch(latlng);
+                       for (let index = 0; index < result.length; index++) {
+                            if (result[index].region_type === 'H') {
+                                // 동에서 숫자 지우기
+                                let si = result[index].region_1depth_name;
+                                let gugun = result[index].region_2depth_name;
+                                let dong = result[index].region_3depth_name;
+                                let arr = dong.split("");
+                                for (let j = 0; j < arr.length; j++) {
+                                    if (isNaN(arr[j])) continue;
+                                    arr.splice(j)
+                                    dong = arr.join('')
+                                }
+
+                                let newAddress = si+" "+gugun+" "+dong;
+                                that.keyword = newAddress;
+                                that.getKeyword("");
+                                break;
+                            }
+                        }  
+                    } catch(e) {
+                        console.log(e);
+                    }
+                })();
+
+            })
+            
+            
         },
         drawMarker(positions, map) {
             console.log('latlng : '+ positions[10].latlng);
@@ -138,17 +242,14 @@ export default {
                 });
 	        }
         },
-        getKeyword(url) {
-            console.log('keyword : ', this.keyword);
-            this.$store.dispatch("GET_KEYWORD", {keyword: this.keyword, url: url});
-            this.callData();
-        }
+        
 
     }
 }
+
 </script>
 
-<style>
+<style scoped>
     #seg {
         position: fixed;
         width: 400px;
@@ -166,15 +267,28 @@ export default {
     }
 
     .item-cell-img {
+        position:relative;
         width: 40%;
         height: 100%;
         margin-right: 1em;
         overflow: hidden;
     }
 
+
+
+    .item-cell-img .item-icon {
+        position: relative;
+        top: 30px;
+        left: 100px;
+    }
+
     .item-cell-img img {
         width: 100%;
         height: 100%;
+    }
+
+    .item-cell-img img:hover {
+        background: rgb(0,0,0,0.5);
     }
 
     .item-cell-desc {
@@ -189,7 +303,7 @@ export default {
     }
 
     .item-title {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
         font-weight: bolder;
         text-decoration: none;
         color: black;
@@ -199,5 +313,11 @@ export default {
     .item-cell-desc p {
         margin: 0;
         font-weight: 600;
+    }
+
+    @keyframes moveUp {
+        0% {transform:translateY(0) scale(1);}
+        50% {transform:translateY(-10px) scale(1.2);}
+        100% {transform:translateY(0) scale(1);}
     }
 </style>
