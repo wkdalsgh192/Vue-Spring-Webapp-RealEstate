@@ -3,6 +3,15 @@
     <div style="width: calc(100% - 200px); margin: 0 auto">
       <template v-if="user">
         <br /><br />
+        <div class="text-center" style="font-size: 30px; color: #3f51b5">
+          <v-icon x-large color="indigo darken-3" disabled
+            >mdi-information</v-icon
+          >
+          &nbsp; | &nbsp;
+          <v-icon x-large color="indigo darken-3" @click="moveheart()"
+            >mdi-heart-box</v-icon
+          >
+        </div>
         <v-divider></v-divider>
         <br /><br />
         <v-card>
@@ -83,6 +92,9 @@ export default {
       });
   },
   methods: {
+    moveheart() {
+      this.$router.replace("/heart");
+    },
     modify() {
       if (this.user.pw != "" && this.user.email != "") {
         axios

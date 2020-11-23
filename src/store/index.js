@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
+import router from '@/router/index.js'
 export const SET_KEYWORD = 'SET_KEYWORD';
 Vue.use(Vuex);
 

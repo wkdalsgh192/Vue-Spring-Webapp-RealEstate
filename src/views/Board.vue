@@ -39,16 +39,18 @@
           </template>
         </v-simple-table>
         <br />
-        <v-btn
-          large
-          color="indigo darken-3"
-          text
-          class="float-right"
-          style="border: 1px solid #3f51b5"
-          @click="movewrite(getId)"
-        >
-          Write
-        </v-btn>
+        <template v-if="getAccessToken">
+          <v-btn
+            large
+            color="indigo darken-3"
+            text
+            class="float-right"
+            style="border: 1px solid #3f51b5"
+            @click="movewrite(getId)"
+          >
+            Write
+          </v-btn>
+        </template>
         <br /><br /><br />
         <v-divider></v-divider>
       </div>
