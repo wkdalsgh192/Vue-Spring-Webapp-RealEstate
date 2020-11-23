@@ -21,6 +21,14 @@ export default new Vuex.Store({
       return state.id;
     },
   },
+  getters: {
+    getAccessToken(state) {
+      return state.accessToken;
+    },
+    getId(state) {
+      return state.id;
+    },
+  },
   mutations: {
     LOGIN(state, payload) {
       state.accessToken = payload["auth-token"];
