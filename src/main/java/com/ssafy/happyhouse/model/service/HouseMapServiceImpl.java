@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.ssafy.happyhouse.model.GugunDto;
 import com.ssafy.happyhouse.model.HouseDealDto;
 import com.ssafy.happyhouse.model.HouseInfoDto;
+import com.ssafy.happyhouse.model.HouseLikeDto;
 import com.ssafy.happyhouse.model.SidoDto;
 import com.ssafy.happyhouse.model.mapper.HouseMapMapper;
 
@@ -53,12 +54,8 @@ public class HouseMapServiceImpl implements HouseMapService {
 		return sqlSession.getMapper(HouseMapMapper.class).searchApt(address);
 	}
 
-//	@Override
-//	public List<HouseDealDto> getDealInDong(int code, String aptName) throws Exception {
-//		Map<String,Object> map = new HashMap<>();
-//        map.put("code", code);
-//        map.put("AptName", aptName);
-//		return sqlSession.getMapper(HouseMapMapper.class).getDealInDong(map);
-//	}
-
+	@Override
+	public void addLike(HouseLikeDto houselike) throws Exception {
+		sqlSession.getMapper(HouseMapMapper.class).addLike(houselike);		
+	}
 }

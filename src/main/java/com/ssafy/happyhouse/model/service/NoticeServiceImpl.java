@@ -33,6 +33,4 @@ public class NoticeServiceImpl implements NoticeService {
 	public void create(NoticeDto notice) throws SQLException {
 		sqlSession.getMapper(NoticeMapper.class).create(notice);
 	}
-	
-	
 }

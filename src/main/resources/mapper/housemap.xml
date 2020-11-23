@@ -24,10 +24,20 @@
 	
 	<select id="searchApt" resultType="houseinfo" parameterType="String">
 		<![CDATA[
-		select no, dong, code, AptName, jibun, lat, lng 
-		from houseinfo info
-		where info.code in (select base.code from baseaddress base where concat(city,' ',gugun,' ',dong) like #{ address })
+		select no, dong, code, info.AptName, jibun, lat, lng, price, area, date 
+		from 
+			(select AptName, dealAmount price, area, str_to_date(concat(dealYear,"-",dealMonth,"-",dealDay), '%Y-%m-%d') as date 
+			from housedeal group by AptName order by date desc) as info 
+		inner join 
+			(select no, dong, code, AptName, jibun, lat, lng 
+			from houseinfo info
+			where info.code in (select base.code from baseaddress base where concat(city,' ',gugun,' ',dong) like #{ address })) as deal 
+		on info.AptName = deal.AptName;
 		]]>
 	</select>
+	
+	<insert id="addLike" parameterType="houselike">
+		 <![CDATA[insert into interestarea values (#{id}, #{aptName}, #{price}, #{area}, #{lastUpdate});]]>
+	</insert>
 
 </mapper>

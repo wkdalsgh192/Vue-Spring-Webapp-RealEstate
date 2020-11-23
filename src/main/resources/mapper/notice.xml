@@ -3,8 +3,26 @@
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.happyhouse.model.mapper.NoticeMapper">
 	<select id = "noticeList" resultType="NoticeDto">
-		select no, title, date
+		select no, title, date, content, member_id
 		from notice
-		order by no
+		order by date
 	</select>	
+	<select id = "detail" resultType="NoticeDto">
+		select no, title, date, content, member_id
+		from notice
+		where no = #{no}
+	</select>
+	<update id="update" parameterType="NoticeDto">
+		update notice
+		set title = #{title}, content = #{content}
+		where no = #{no}
+	</update>
+	<delete id="delete" parameterType="NoticeDto">
+		delete from notice
+		where no = #{no}
+	</delete>
+	<insert id="create" parameterType="NoticeDto">
+		insert into notice(title, content, member_id)
+		values(#{title}, #{content}, #{member_id})
+	</insert>
 </mapper>

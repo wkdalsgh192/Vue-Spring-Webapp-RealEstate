@@ -1,113 +1,162 @@
 package com.ssafy.happyhouse.controller;
 
 import java.io.IOException;
-import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.happyhouse.model.MemberDto;
+import com.ssafy.happyhouse.model.service.JwtService;
 import com.ssafy.happyhouse.model.service.MemberService;
-
-@Controller
-@RequestMapping("/member.do")
+@CrossOrigin(origins = {"*"}, maxAge = 6000)
+@RestController
+@RequestMapping("/member")
 public class MemberController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	@Autowired
 	private MemberService memberService;
+	@Autowired
+	private JwtService jwtService;
 
+//	@RequestMapping(value = "/login", method = RequestMethod.POST)
+//	private String login(@RequestBody MemberDto member) throws ServletException, IOException {
+//		System.out.println(member.toString());
+//		String msg = "fail";
+//		try {
+//			member = memberService.login(member);
+//			msg = "success";
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//			msg = "fail";
+//		}
+//		return msg;
+//	}
+	public static final Logger logger = LoggerFactory.getLogger(MemberController.class);
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	private String login(MemberDto member, Model model, HttpSession session, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println(member.toString());
+	private ResponseEntity<Map<String, Object>> login(@RequestBody MemberDto member) throws ServletException, IOException {
+		Map<String, Object> resultMap = new HashMap<>();
+		HttpStatus status = null;
 		try {
-			member = memberService.login(member);
-			if(member != null) {//로그인 성공시 세션에 기록
-				session.setAttribute("member", member);
-			}else {//로그인 실패시 메세지를 화면에 전달
-				model.addAttribute("msg", "아이디 비밀번호를 다시 확인해주세요.");
+			MemberDto loginUser = memberService.login(member);
+			if(loginUser != null) {
+				String token = jwtService.create(loginUser);
+				logger.trace("로그인 토근정보: {}", token);
+				resultMap.put("auth-token", token);
+				resultMap.put("id", loginUser.getId());
+				status = HttpStatus.ACCEPTED;
+			}else {
+				resultMap.put("message", "로그인 실패");
+				status = HttpStatus.ACCEPTED;
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			model.addAttribute("msg", "로그인 중 문제가 발생했습니다.");
-			return "index";
+		}catch(Exception e) {
+			logger.error("로그인 실패 : {}", e);
+			resultMap.put("message", e.getMessage());
+			status = HttpStatus.INTERNAL_SERVER_ERROR;
 		}
-		return "index";
+		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
 	
-	@RequestMapping(value = "/logout", method = RequestMethod.GET)
-	private String logout(HttpSession session) throws IOException, ServletException {
-		session.invalidate();
-		return "index";
-	}
+//	@RequestMapping(value = "/logout", method = RequestMethod.GET)
+//	private String logout(HttpSession session) throws IOException, ServletException {
+//		session.invalidate();
+//		return "index";
+//	}
 	
 	@RequestMapping(value = "/signup", method = RequestMethod.POST)
-	private String signup(MemberDto member, Model model, HttpSession session, HttpServletResponse response) throws ServletException, IOException{
-		System.out.println(member.toString());
+	private String signup(@RequestBody MemberDto member) throws ServletException, IOException{
+		String msg = "fail";
 		try {
-			if(memberService.signup(member)) {
-				session.setAttribute("msg", "회원가입 성공");
-			}else {
-				model.addAttribute("msg", "회원가입 실패");
-			}
+			memberService.signup(member);
+			msg = "success";
 			
 		}catch (Exception e) {
 			e.printStackTrace();
-			model.addAttribute("msg", "회원가입 중 문제가 발생했습니다.");
-			return "index";
+			msg = "fail";
 		}
-		return "index";
+		return msg;
+	}
+	@RequestMapping(value = "/info", method = RequestMethod.GET)
+	private ResponseEntity<Map<String, Object>> getInfo(HttpServletRequest req){
+		Map<String, Object> resultMap = new HashMap<>();
+		HttpStatus status = HttpStatus.ACCEPTED;
+		System.out.print(">>>>> " + jwtService.get(req.getHeader("auth-token")));
+		try {
+			resultMap.putAll(jwtService.get(req.getHeader("auth-token")));
+			status = HttpStatus.ACCEPTED;
+		}catch(RuntimeException e) {
+			logger.error("정보조회 실패 : {}", e);
+			resultMap.put("message", e.getMessage());
+			status = HttpStatus.INTERNAL_SERVER_ERROR;
+		}
+		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
 	
-	@RequestMapping(value = "/update", method = RequestMethod.POST)
-	private String update(MemberDto member, Model model, HttpSession session, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println(member.toString());
+	@RequestMapping(value = "/update", method = RequestMethod.PUT)
+	private String update(@RequestBody MemberDto member) throws ServletException, IOException {
+		String msg = "fail";
 		try {
 			memberService.update(member);
-			session.setAttribute("msg", "회원 정보 수정 실패");
+			msg = "success";
 		}catch (Exception e) {
 			e.printStackTrace();
-			return "index";
+			msg = "fail";
 		}
-		session.invalidate();
-		return "index";
+		return msg;
 	}
-	
-	@RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
-	private String delete(@PathVariable("id") String id, Model model, HttpSession session, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println(id + "삭제");
+	@RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
+	private String delete(@PathVariable("id") String id) throws ServletException, IOException {
+		String msg = "fail";
 		try {
 			memberService.delete(id);	
-			session.setAttribute("msg", "회원탈퇴 성공");
+			msg = "success";
 		}catch (Exception e) {
 			e.printStackTrace();
-			return "index";
+			msg = "fail";
 		}
-		session.invalidate();
-		return "index";
+		return msg;
 	}
-	@RequestMapping(value = "/mypage")
-	private String mypage(Model model) throws ServletException, IOException{
-		return "/project/settings";
-	}
-	@RequestMapping(value = "/dong")
-	private String dong(Model model) throws ServletException, IOException{
-		return "/project/dongDeal";
-	}
-	@RequestMapping(value = "/apt")
-	private String apt(Model model) throws ServletException, IOException{
-		return "/project/aptDeal";
-	}
-	@RequestMapping(value = "/board")
-	private String board(Model model) throws ServletException, IOException{
-		return "/project/board";
-	}
+//	@RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
+//	private String delete(@PathVariable("id") String id, Model model, HttpSession session, HttpServletResponse response) throws ServletException, IOException {
+//		System.out.println(id + "삭제");
+//		try {
+//			memberService.delete(id);	
+//			session.setAttribute("msg", "회원탈퇴 성공");
+//		}catch (Exception e) {
+//			e.printStackTrace();
+//			return "index";
+//		}
+//		session.invalidate();
+//		return "index";
+//	}
+////	@RequestMapping(value = "/mypage")
+////	private String mypage(Model model) throws ServletException, IOException{
+////		return "/project/settings";
+////	}
+////	@RequestMapping(value = "/dong")
+////	private String dong(Model model) throws ServletException, IOException{
+////		return "/project/dongDeal";
+////	}
+////	@RequestMapping(value = "/apt")
+////	private String apt(Model model) throws ServletException, IOException{
+////		return "/project/aptDeal";
+//	}
+//	@RequestMapping(value = "/board")
+//	private String board(Model model) throws ServletException, IOException{
+//		return "/project/board";
+//	}
 }
