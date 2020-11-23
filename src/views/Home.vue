@@ -85,7 +85,6 @@ export default {
   },
   methods: {
     getKeyword() {
-      console.log(1);
       if (!this.isEmpty) {
         this.$store.dispatch("GET_KEYWORD", {
           keyword: this.temp,

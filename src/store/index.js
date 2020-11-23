@@ -3,13 +3,15 @@ import Vuex from "vuex";
 import axios from "axios";
 import router from '@/router/index.js'
 export const SET_KEYWORD = 'SET_KEYWORD';
+export const SET_LATLNG = 'SET_LATLNG';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
     accessToken: null,
     id: "",
-    keyword: ''
+    keyword: '',
+    centerLatLng: [],
   },
   getters: {
     getAccessToken(state) {
@@ -31,6 +33,9 @@ export default new Vuex.Store({
     [SET_KEYWORD](state, keyword) { 
       state.keyword = keyword;
     },
+    [SET_LATLNG](state, payload) {
+      state.centerLatLng = payload;
+    },
   },
   actions: {
     LOGIN(context, user) {
@@ -49,7 +54,6 @@ export default new Vuex.Store({
     },
     GET_KEYWORD(context, payload) {
       context.commit(SET_KEYWORD, payload.keyword);
-      // console.log(payload);
       if (payload.url === "") return;
       router.push(payload.url);
     },
