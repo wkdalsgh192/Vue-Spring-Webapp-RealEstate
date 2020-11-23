@@ -6,7 +6,8 @@ import Board from "../views/Board.vue";
 import Detail from "../views/Detail.vue";
 import Write from "../views/Write.vue";
 import SearchResult from "../views/SearchResult.vue";
-
+import Heart from "../views/Heart.vue";
+import Chart from "../views/Chart.vue";
 Vue.use(VueRouter);
 
 const routes = [
@@ -39,7 +40,17 @@ const routes = [
     path: "/search",
     name: "Search",
     component: SearchResult
-  }
+  },
+  {
+    path: "/heart",
+    name: "heart",
+    component: Heart,
+  },
+  {
+    path: "/chart",
+    name: "chart",
+    component: Chart,
+  },
 ];
 
 const router = new VueRouter({

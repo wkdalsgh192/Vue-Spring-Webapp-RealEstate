@@ -24,11 +24,30 @@
         <v-btn :to="{ name: 'board' }" text :color="btnColor">
           <h3>Notice</h3>
         </v-btn>
+        <v-btn text :color="btnColor" dark :to="{ name: 'chart' }">
+          <h3>Corona</h3>
+        </v-btn>
         <v-btn text :color="btnColor" @click.prevent="onClickLogout">
           <h3>Logout</h3>
         </v-btn>
       </template>
+      <template v-else-if="this.res == 1">
+        <v-avatar variant="primary"> </v-avatar> Kakao Guest님 환영합니다.
+        (제한된 기능만 사용가능합니다.)
+        <v-btn :to="{ name: 'board' }" text :color="btnColor">
+          <h3>Notice</h3>
+        </v-btn>
+        <v-btn text :color="btnColor" dark :to="{ name: 'chart' }">
+          <h3>Corona</h3>
+        </v-btn>
+        <v-btn text :color="btnColor" @click="zero">
+          <h3>Logout</h3>
+        </v-btn>
+      </template>
       <template v-else>
+        <v-btn text :color="btnColor" dark :to="{ name: 'chart' }">
+          <h3>Corona</h3>
+        </v-btn>
         <v-dialog v-model="l_close" persistent max-width="600px">
           <template v-slot:activator="{ on, attrs }">
             <v-btn text :color="btnColor" dark v-bind="attrs" v-on="on">
@@ -62,6 +81,16 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
+              <a :href="kakaoLoginLink" alt="kakao login" @click="addCount">
+                <img
+                  style="width: 90%"
+                  alt="kakao logo"
+                  src="@/assets/kakao_login_medium_narrow.png"
+                />
+              </a>
+              <v-spacer></v-spacer><v-spacer></v-spacer><v-spacer></v-spacer
+              ><v-spacer></v-spacer> <v-spacer></v-spacer><v-spacer></v-spacer
+              ><v-spacer></v-spacer><v-spacer></v-spacer>
               <v-btn color="indigo darken-3" text @click="login"> Login </v-btn>
               <v-btn color="indigo darken-3" text @click="l_close = false">
                 CLOSE
@@ -131,6 +160,7 @@ export default {
     btnColor: "white",
     l_close: false,
     close: false,
+    chart: false,
     id: "",
     pw: "",
     email: "",
@@ -138,15 +168,32 @@ export default {
       id: "",
       pw: "",
     },
+    count: 0,
+    res: 0,
     message: "",
+    client_id: "144400cb3aff71d7d6c539363528967b",
+    redirect_uri: "http://localhost:8080",
   }),
+  created() {
+    this.res = localStorage.getItem("count");
+  },
   computed: {
     nextRoute() {
       return this.$route.params.nextRoute ? this.$route.params.nextRoute : "";
     },
     ...mapGetters(["getAccessToken", "getId"]),
+    kakaoLoginLink() {
+      return `https://kauth.kakao.com/oauth/authorize?client_id=${this.client_id}&redirect_uri=${this.redirect_uri}&response_type=code`;
+    },
   },
   methods: {
+    addCount() {
+      localStorage.setItem("count", 1);
+    },
+    zero() {
+      localStorage.setItem("count", 0);
+      this.res = localStorage.getItem("count");
+    },
     onClickLogout() {
       this.$store.dispatch("LOGOUT").then(() => {
         this.$router.replace("/").catch(() => {});
@@ -184,5 +231,3 @@ export default {
   },
 };
 </script>
-
-<style></style>
