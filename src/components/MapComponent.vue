@@ -5,17 +5,15 @@
                 <div class="item-cell-img">
                     <v-icon 
                         :class="{'item-icon': true}" 
-                        @click="applyEffect"
+                        @click="applyEffect; getResult(result);"
                     >mdi-heart</v-icon>
-                    <div class></div>
                     <img :src="'./img/'+index%11+'.jpg'">
-                    <!-- <img src="@/assets/0.jpg"> -->
                     </div>
                 <div class="item-cell-desc">
                     <h4><a class="item-title" href="#">{{ result.aptName }}</a></h4>
-                    <p> 거래금액 : 60억 원</p>
-                    <p> 면적 : <span> </span> </p>
-                    <p> 최종 수정일 : <span>2020.11.16</span> </p>
+                    <p> 거래금액 : {{ parseInt(result.price) }}억 원</p>
+                    <p> 면적 : <span> {{ Math.round(result.area, 0) }} 평 </span> </p>
+                    <p> 최종 거래일 : <span>{{ result.date }}</span> </p>
                 </div>
             </div>
         </div>
@@ -51,44 +49,17 @@
 <script>
 import index, { SET_LATLNG } from '../store';
 import axios from "axios";
-// function displayCenterInfo(result, status) {
-//     if (status === kakao.maps.services.Status.OK) {
-//         let dispDiv = document.getElementById('searchField');
-//         for (let index = 0; index < result.length; index++) {
-//             if (result[index].region_type === 'H') {
-//                 // 동에서 숫자 지우기
-//                 let si = result[index].region_1depth_name;
-//                 let gugun = result[index].region_2depth_name;
-//                 let dong = result[index].region_3depth_name;
-//                 let arr = dong.split("");
-//                 for (let j = 0; j < arr.length; j++) {
-//                     if (isNaN(arr[j])) continue;
-//                     arr.splice(j)
-//                     dong = arr.join('')
-//                 }
-
-//                 let newAddress = si+" "+gugun+" "+dong;
-//                 dispDiv.value = newAddress;
-//                 // console.log(this.keyword);
-//                 break;
-//             }
-//         }
-//         console.log(document.getElementById('searchField').value+"/");   
-//     }
-// }
 
 export default {
-    
     index,
     data() {
         return {
             keyword: '',
-            results : new Array(),
+            infoArr : new Array(),
         }
     },
     mounted() {
        if (window.kakao && window.kakao.maps) {
-            // this.initMap();
             this.callData();
         } else {
             const script = document.createElement('script');
@@ -99,10 +70,34 @@ export default {
         }
         
     },
+    computed : {
+        results : function() {
+            return this.infoArr
+        },
+    },
     methods : {
+        getResult(item) {
+            // vueX로 보내기
+            // axios로 백엔드로 보내기 -- 로그인이 안 되어있으면 넘어가서는 안 된다.
+            if (this.$store.state.id === "") return alert("먼저 로그인해주십시오"); // msg div에 로그인해주십시오 출력
+            axios.post('http://localhost:8000/happyhouse/map/house/like', {
+                    id : this.$store.state.id,
+	                aptName : item.aptName,
+	                price : item.price,
+	                area : item.area,
+	                lastUpdate : item.date,
+                })
+                .then((response) => {
+                    // msg div에 추가
+                    console.log(response)
+                })
+                .catch((e) => {
+                    console.log(e);
+                });
+        },
         applyEffect(e) {
             console.log(e.target);
-            e.target.style.animation= "moveUp 0.8s ease";
+            e.target.style.animation= "moveUp 1s ease infinite";
         },
         getMap(lat, lng) {
             var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
@@ -128,7 +123,6 @@ export default {
             // keyword를 vuex에서 가져와서 axios로 보내준다.
             const sWord = this.$store.state.keyword;
             this.keyword = sWord;
-            console.log(sWord);
             // const strArr = this.$store.state.keyword.split(' ');
             // const sKey = strArr.splice(strArr.length-1,1)[0];
             // const sWord = strArr.join(' ');
@@ -136,11 +130,10 @@ export default {
             axios.get('http://localhost:8000/happyhouse/map/house/info/'+sWord)
                 .then((response) => {
                     // 결과 데이터를 받아옴
-                    console.log("hello");
-                    console.log(response.data);
                     // 결과 데이터를 저장
+                    this.infoArr.splice(0, this.infoArr.length);
                     for (let index = 0; index < response.data.length; index++) {
-                        this.results.push(response.data[index]);
+                        this.infoArr.push(response.data[index]);
                     }
                     this.renewMap(response.data);                 
                 })
@@ -164,8 +157,6 @@ export default {
             })
         },
         getKeyword : function(url) {
-            console.log("1번"+this.keyword);
-            
             this.$store.dispatch("GET_KEYWORD", {keyword: this.keyword, url: url});
             this.callData();
         },
@@ -173,18 +164,14 @@ export default {
             // 비동기 처리로 인해서 값을 가지고 오지 못한다. => Promise 사용
             let latlng = null;
             let geocoder = new kakao.maps.services.Geocoder();
-            console.log(this);
-            let that = this;
+            let that = this; // 핵중요!!!!!!!
             kakao.maps.event.addListener(map, 'dragend', function() {
                 latlng = map.getCenter();
                 
-                // geocoder.coord2RegionCode(latlng.getLng(), latlng.getLat(), displayCenterInfo);
-                console.log(this);
                 const addressSearch = latlng => {
                     return new Promise((resolve, reject) => {
                         geocoder.coord2RegionCode(latlng.getLng(), latlng.getLat(), function(result, status) {
                             if (status === kakao.maps.services.Status.OK) {
-                               
                                 resolve(result);
                             } else {
                                 reject(status);
@@ -224,7 +211,6 @@ export default {
             
         },
         drawMarker(positions, map) {
-            console.log('latlng : '+ positions[10].latlng);
             for (var i = 0; i < positions.length; i ++) {
                 // 마커 이미지 url 및 이미지 크기
                 var imageSize = new kakao.maps.Size(24, 35);
@@ -242,8 +228,6 @@ export default {
                 });
 	        }
         },
-        
-
     }
 }
 
@@ -273,8 +257,6 @@ export default {
         margin-right: 1em;
         overflow: hidden;
     }
-
-
 
     .item-cell-img .item-icon {
         position: relative;
@@ -316,8 +298,8 @@ export default {
     }
 
     @keyframes moveUp {
-        0% {transform:translateY(0) scale(1);}
-        50% {transform:translateY(-10px) scale(1.2);}
-        100% {transform:translateY(0) scale(1);}
+        0% {transform:translateY(0);}
+        50% {transform:translateY(-10px);}
+        100% {transform:translateY(0);}
     }
 </style>

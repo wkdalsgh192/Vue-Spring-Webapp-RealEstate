@@ -21,14 +21,6 @@ export default new Vuex.Store({
       return state.id;
     },
   },
-  getters: {
-    getAccessToken(state) {
-      return state.accessToken;
-    },
-    getId(state) {
-      return state.id;
-    },
-  },
   mutations: {
     LOGIN(state, payload) {
       state.accessToken = payload["auth-token"];
@@ -42,9 +34,8 @@ export default new Vuex.Store({
       state.keyword = keyword;
     },
     [SET_LATLNG](state, payload) {
-      console.log("center : "+payload);
       state.centerLatLng = payload;
-    }
+    },
   },
   actions: {
     LOGIN(context, user) {
