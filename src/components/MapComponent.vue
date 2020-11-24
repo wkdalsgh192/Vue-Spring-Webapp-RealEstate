@@ -4,16 +4,20 @@
             <div class="item-cell" v-for="(result, index) in results" :key="result.no">
                 <div class="item-cell-img">
                     <v-icon 
-                        :class="{'item-icon': true}" 
-                        @click="applyEffect; getResult(result);"
+                        class="item-icon white--text" 
+                        @click="applyEffect($event); getResult(result);"
                     >mdi-heart</v-icon>
                     <img :src="'./img/'+index%11+'.jpg'">
                     </div>
                 <div class="item-cell-desc">
                     <h4><a class="item-title" href="#">{{ result.aptName }}</a></h4>
-                    <p> 거래금액 : {{ parseInt(result.price) }}억 원</p>
+                    <p> 
+                        거래금액 : {{ parseInt(result.price) }}억 원
+                        <!-- <button class="rlp">실거래가</button> -->
+                        <modal-component :aptName="result.aptName"></modal-component>
+                    </p>
                     <p> 면적 : <span> {{ Math.round(result.area, 0) }} 평 </span> </p>
-                    <p> 최종 거래일 : <span>{{ result.date }}</span> </p>
+                    <p> 최근 거래일 : <span>{{ result.date }}</span> </p>
                 </div>
             </div>
         </div>
@@ -48,10 +52,14 @@
 
 <script>
 import index, { SET_LATLNG } from '../store';
+import ModalComponent from './ModalComponent.vue'
 import axios from "axios";
 
 export default {
     index,
+    components : {
+        ModalComponent
+    },
     data() {
         return {
             keyword: '',
@@ -82,10 +90,10 @@ export default {
             if (this.$store.state.id === "") return alert("먼저 로그인해주십시오"); // msg div에 로그인해주십시오 출력
             axios.post('http://localhost:8000/happyhouse/map/house/like', {
                     id : this.$store.state.id,
-	                aptName : item.aptName,
+	                apt_name : item.aptName,
 	                price : item.price,
 	                area : item.area,
-	                lastUpdate : item.date,
+	                last_update : item.date,
                 })
                 .then((response) => {
                     // msg div에 추가
@@ -95,9 +103,12 @@ export default {
                     console.log(e);
                 });
         },
-        applyEffect(e) {
-            console.log(e.target);
-            e.target.style.animation= "moveUp 1s ease infinite";
+        applyEffect: function(event) {
+            if (this.$store.state.id == "") return;
+            if (event.target.classList.contains("white--text")) {
+                event.target.style.WebkitAnimation= "moveUp 0.8s 1";
+                event.target.classList.replace('white--text', 'red--text');
+            }
         },
         getMap(lat, lng) {
             var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
@@ -233,15 +244,32 @@ export default {
 
 </script>
 
-<style scoped>
+<style>
     #seg {
         position: fixed;
         width: 400px;
         height: 100vh;
         z-index: 10;
         background-color:white;
-        opacity: 0.7;
+        opacity: 0.85;
         overflow:scroll
+    }
+
+    #seg::-webkit-scrollbar {
+        width: 12px;
+    }
+
+    #seg::-webkit-scrollbar-thumb {
+        background-color: #2f3542;
+        border-radius: 10px;
+        background-clip: padding-box;
+        border: 2px solid transparent;
+    }
+
+    #seg::-webkit-scrollbar-track {
+        background-color: grey;
+        border-radius: 10px;
+        box-shadow: inset 0px 0px 5px white;
     }
 
     .item-cell {
@@ -295,6 +323,14 @@ export default {
     .item-cell-desc p {
         margin: 0;
         font-weight: 600;
+    }
+
+    .item-cell-desc .rlp {
+        margin-left: 0.3rem;
+        padding: 0.1rem 0.2rem ;
+        font-size: 0.5rem;
+        border: 0.8px solid black;
+        border-radius: 10%;
     }
 
     @keyframes moveUp {
