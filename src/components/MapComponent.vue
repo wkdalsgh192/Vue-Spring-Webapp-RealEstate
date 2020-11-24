@@ -1,21 +1,25 @@
 <template>
-  <div>
-    <div id="seg">
-      <div
-        class="item-cell"
-        v-for="(result, index) in results"
-        :key="result.no"
-      >
-        <div class="item-cell-img">
-          <v-icon
-            :class="{ 'item-icon': true }"
-            @click="
-              applyEffect;
-              getResult(result);
-            "
-            >mdi-heart</v-icon
-          >
-          <img :src="'./img/' + (index % 11) + '.jpg'" />
+    <div>
+        <div id="seg">
+            <div class="item-cell" v-for="(result, index) in results" :key="result.no">
+                <div class="item-cell-img">
+                    <v-icon 
+                        class="item-icon white--text" 
+                        @click="applyEffect($event); getResult(result);"
+                    >mdi-heart</v-icon>
+                    <img :src="'./img/'+index%11+'.jpg'">
+                    </div>
+                <div class="item-cell-desc">
+                    <h4><a class="item-title" href="#">{{ result.aptName }}</a></h4>
+                    <p> 
+                        거래금액 : {{ parseInt(result.price) }}억 원
+                        <!-- <button class="rlp">실거래가</button> -->
+                        <modal-component :aptName="result.aptName"></modal-component>
+                    </p>
+                    <p> 면적 : <span> {{ Math.round(result.area, 0) }} 평 </span> </p>
+                    <p> 최근 거래일 : <span>{{ result.date }}</span> </p>
+                </div>
+            </div>
         </div>
         <div class="item-cell-desc">
           <h4>
@@ -57,54 +61,20 @@
 
 
 <script>
-import index, { SET_LATLNG } from "../store";
+import index, { SET_LATLNG } from '../store';
+import ModalComponent from './ModalComponent.vue'
 import axios from "axios";
 
 export default {
-  index,
-  data() {
-    return {
-      keyword: "",
-      infoArr: new Array(),
-    };
-  },
-  mounted() {
-    if (window.kakao && window.kakao.maps) {
-      this.callData();
-    } else {
-      const script = document.createElement("script");
-      /* global kakao */
-      script.onload = () => kakao.maps.load(this.initMap);
-      script.src =
-        "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=123cf81f3fe1f9fbdcaf7be8ef5d58b7&libraries=services,clusterer,drawing";
-      document.head.appendChild(script);
-    }
-  },
-  computed: {
-    results: function () {
-      return this.infoArr;
+    index,
+    components : {
+        ModalComponent
     },
-  },
-  methods: {
-    getResult(item) {
-      // vueX로 보내기
-      // axios로 백엔드로 보내기 -- 로그인이 안 되어있으면 넘어가서는 안 된다.
-      if (this.$store.state.id === "") return alert("먼저 로그인해주십시오"); // msg div에 로그인해주십시오 출력
-      axios
-        .post("http://localhost:8000/happyhouse/map/house/like", {
-          id: this.$store.state.id,
-          apt_name: item.aptName,
-          price: item.price,
-          area: item.area,
-          last_update: item.date,
-        })
-        .then((response) => {
-          // msg div에 추가
-          console.log(response);
-        })
-        .catch((e) => {
-          console.log(e);
-        });
+    data() {
+        return {
+            keyword: '',
+            infoArr : new Array(),
+        }
     },
     applyEffect(e) {
       console.log(e.target);
@@ -118,48 +88,45 @@ export default {
         };
       return new kakao.maps.Map(mapContainer, mapOption);
     },
-    initMap() {
-      // v3가 모두 로드된 후, 콜백함수를 실행한다.
-      kakao.maps.load(() => {
-        var map = this.getMap(37.566826, 126.9786567);
-
-        var markerPosition = new kakao.maps.LatLng(37.566826, 126.9786567);
-        var marker = new kakao.maps.Marker({
-          position: markerPosition,
-        });
-        marker.setMap(map);
-      });
-    },
-    callData() {
-      // keyword를 vuex에서 가져와서 axios로 보내준다.
-      const sWord = this.$store.state.keyword;
-      this.keyword = sWord;
-      // const strArr = this.$store.state.keyword.split(' ');
-      // const sKey = strArr.splice(strArr.length-1,1)[0];
-      // const sWord = strArr.join(' ');
-      // 백엔드로 검색어를 보내주는 부분
-      axios
-        .get("http://localhost:8000/happyhouse/map/house/info/" + sWord)
-        .then((response) => {
-          // 결과 데이터를 받아옴
-          // 결과 데이터를 저장
-          this.infoArr.splice(0, this.infoArr.length);
-          for (let index = 0; index < response.data.length; index++) {
-            this.infoArr.push(response.data[index]);
-          }
-          this.renewMap(response.data);
-        });
-    },
-    renewMap(data) {
-      // kakao.maps 가 로드되기 전에 kakao.maps method가 호출되면 에러가 난다.
-      kakao.maps.load(() => {
-        let lat, lng;
-        let positions = new Array();
-        data.forEach((vo) => {
-          (lat = vo["lat"]), (lng = vo["lng"]);
-
-          positions.push({ latlng: new kakao.maps.LatLng(lat, lng) });
-        });
+    methods : {
+        getResult(item) {
+            // vueX로 보내기
+            // axios로 백엔드로 보내기 -- 로그인이 안 되어있으면 넘어가서는 안 된다.
+            if (this.$store.state.id === "") return alert("먼저 로그인해주십시오"); // msg div에 로그인해주십시오 출력
+            axios.post('http://localhost:8000/happyhouse/map/house/like', {
+                    id : this.$store.state.id,
+	                apt_name : item.aptName,
+	                price : item.price,
+	                area : item.area,
+	                last_update : item.date,
+                })
+                .then((response) => {
+                    // msg div에 추가
+                    console.log(response)
+                })
+                .catch((e) => {
+                    console.log(e);
+                });
+        },
+        applyEffect: function(event) {
+            if (this.$store.state.id == "") return;
+            if (event.target.classList.contains("white--text")) {
+                event.target.style.WebkitAnimation= "moveUp 0.8s 1";
+                event.target.classList.replace('white--text', 'red--text');
+            }
+        },
+        getMap(lat, lng) {
+            var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+                mapOption = {
+                    center: new kakao.maps.LatLng(lat, lng), // 지도의 중심좌표
+                    level: 5 // 지도의 확대 레벨
+                };
+            return new kakao.maps.Map(mapContainer, mapOption);
+        },
+        initMap() {
+            // v3가 모두 로드된 후, 콜백함수를 실행한다.
+            kakao.maps.load(() => {
+                var map = this.getMap(37.566826, 126.9786567);
 
         this.$store.commit(SET_LATLNG, [lat, lng]);
         var map = this.getMap(lat, lng);
@@ -246,22 +213,39 @@ export default {
 };
 </script>
 
-<style scoped>
-#seg {
-  position: fixed;
-  width: 400px;
-  height: 100vh;
-  z-index: 10;
-  background-color: white;
-  opacity: 0.7;
-  overflow: scroll;
-}
+<style>
+    #seg {
+        position: fixed;
+        width: 400px;
+        height: 100vh;
+        z-index: 10;
+        background-color:white;
+        opacity: 0.85;
+        overflow:scroll
+    }
 
-.item-cell {
-  display: flex;
-  padding: 1rem;
-  height: 12rem;
-}
+    #seg::-webkit-scrollbar {
+        width: 12px;
+    }
+
+    #seg::-webkit-scrollbar-thumb {
+        background-color: #2f3542;
+        border-radius: 10px;
+        background-clip: padding-box;
+        border: 2px solid transparent;
+    }
+
+    #seg::-webkit-scrollbar-track {
+        background-color: grey;
+        border-radius: 10px;
+        box-shadow: inset 0px 0px 5px white;
+    }
+
+    .item-cell {
+        display: flex;
+        padding: 1rem;
+        height: 12rem;
+    }
 
 .item-cell-img {
   position: relative;
@@ -310,15 +294,17 @@ export default {
   font-weight: 600;
 }
 
-@keyframes moveUp {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
+    .item-cell-desc .rlp {
+        margin-left: 0.3rem;
+        padding: 0.1rem 0.2rem ;
+        font-size: 0.5rem;
+        border: 0.8px solid black;
+        border-radius: 10%;
+    }
+
+    @keyframes moveUp {
+        0% {transform:translateY(0);}
+        50% {transform:translateY(-10px);}
+        100% {transform:translateY(0);}
+    }
 </style>
