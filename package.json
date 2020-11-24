@@ -10,6 +10,7 @@
   "dependencies": {
     "async-request": "^1.2.0",
     "axios": "^0.21.0",
+    "buefy": "^0.9.4",
     "chart.js": "^2.9.4",
     "chartjs": "^0.3.24",
     "core-js": "^3.6.5",

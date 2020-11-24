@@ -21,31 +21,41 @@
                 </div>
             </div>
         </div>
-        <div class="map" id="map" style="width: 100%; height: 1000px; margin: auto;">
-            <v-toolbar
-            dense
-            floating
-            style="z-index: 10;"
-            >
-                <v-text-field
-                    hide-details
-                    prepend-icon="mdi-magnify"
-                    single-line
-                    id="searchField"
-                    v-model="keyword"
-                    @keydown.enter="getKeyword('')"
-                ></v-text-field>
-
-                <v-btn icon>
-                    <v-icon>mdi-crosshairs-gps</v-icon>
-                </v-btn>
-
-                <v-btn icon>
-                    <v-icon>mdi-dots-vertical</v-icon>
-                </v-btn>
-            </v-toolbar>
+        <div class="item-cell-desc">
+          <h4>
+            <a class="item-title" href="#">{{ result.aptName }}</a>
+          </h4>
+          <p>거래금액 : {{ parseInt(result.price) }}억 원</p>
+          <p>
+            면적 : <span> {{ Math.round(result.area, 0) }} 평 </span>
+          </p>
+          <p>
+            최종 거래일 : <span>{{ result.date }}</span>
+          </p>
         </div>
+      </div>
     </div>
+    <div class="map" id="map" style="width: 100%; height: 1000px; margin: auto">
+      <v-toolbar dense floating style="z-index: 10">
+        <v-text-field
+          hide-details
+          prepend-icon="mdi-magnify"
+          single-line
+          id="searchField"
+          v-model="keyword"
+          @keydown.enter="getKeyword('')"
+        ></v-text-field>
+
+        <v-btn icon>
+          <v-icon>mdi-crosshairs-gps</v-icon>
+        </v-btn>
+
+        <v-btn icon>
+          <v-icon>mdi-dots-vertical</v-icon>
+        </v-btn>
+      </v-toolbar>
+    </div>
+  </div>
 </template>
 
 
@@ -66,22 +76,17 @@ export default {
             infoArr : new Array(),
         }
     },
-    mounted() {
-       if (window.kakao && window.kakao.maps) {
-            this.callData();
-        } else {
-            const script = document.createElement('script');
-            /* global kakao */
-            script.onload = () => kakao.maps.load(this.initMap);
-            script.src = 'http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=123cf81f3fe1f9fbdcaf7be8ef5d58b7&libraries=services,clusterer,drawing';
-            document.head.appendChild(script);
-        }
-        
+    applyEffect(e) {
+      console.log(e.target);
+      e.target.style.animation = "moveUp 1s ease infinite";
     },
-    computed : {
-        results : function() {
-            return this.infoArr
-        },
+    getMap(lat, lng) {
+      var mapContainer = document.getElementById("map"), // 지도를 표시할 div
+        mapOption = {
+          center: new kakao.maps.LatLng(lat, lng), // 지도의 중심좌표
+          level: 5, // 지도의 확대 레벨
+        };
+      return new kakao.maps.Map(mapContainer, mapOption);
     },
     methods : {
         getResult(item) {
@@ -123,125 +128,89 @@ export default {
             kakao.maps.load(() => {
                 var map = this.getMap(37.566826, 126.9786567);
 
-                var markerPosition  = new kakao.maps.LatLng(37.566826, 126.9786567); 
-                var marker = new kakao.maps.Marker({
-                    position: markerPosition
-                });
-                marker.setMap(map);
-            }); 
-        },
-        callData() {
-            // keyword를 vuex에서 가져와서 axios로 보내준다.
-            const sWord = this.$store.state.keyword;
-            this.keyword = sWord;
-            // const strArr = this.$store.state.keyword.split(' ');
-            // const sKey = strArr.splice(strArr.length-1,1)[0];
-            // const sWord = strArr.join(' ');
-            // 백엔드로 검색어를 보내주는 부분
-            axios.get('http://localhost:8000/happyhouse/map/house/info/'+sWord)
-                .then((response) => {
-                    // 결과 데이터를 받아옴
-                    // 결과 데이터를 저장
-                    this.infoArr.splice(0, this.infoArr.length);
-                    for (let index = 0; index < response.data.length; index++) {
-                        this.infoArr.push(response.data[index]);
-                    }
-                    this.renewMap(response.data);                 
-                })
-        },
-        renewMap(data) {
-            // kakao.maps 가 로드되기 전에 kakao.maps method가 호출되면 에러가 난다.
-            kakao.maps.load(() => {
-                let lat, lng;
-                let positions = new Array();
-                data.forEach((vo) => {
-                    lat = vo['lat'], lng=vo['lng'];
-                    
-                    positions.push({'latlng' : new kakao.maps.LatLng(lat, lng)});
-                });
+        this.$store.commit(SET_LATLNG, [lat, lng]);
+        var map = this.getMap(lat, lng);
+        this.drawMarker(positions, map);
 
-                this.$store.commit(SET_LATLNG, [lat, lng]);
-                var map = this.getMap(lat, lng);
-                this.drawMarker(positions, map);
+        this.addDrag(map);
+      });
+    },
+    getKeyword: function (url) {
+      this.$store.dispatch("GET_KEYWORD", { keyword: this.keyword, url: url });
+      this.callData();
+    },
+    addDrag(map) {
+      // 비동기 처리로 인해서 값을 가지고 오지 못한다. => Promise 사용
+      let latlng = null;
+      let geocoder = new kakao.maps.services.Geocoder();
+      let that = this; // 핵중요!!!!!!!
+      kakao.maps.event.addListener(map, "dragend", function () {
+        latlng = map.getCenter();
 
-                this.addDrag(map);
-            })
-        },
-        getKeyword : function(url) {
-            this.$store.dispatch("GET_KEYWORD", {keyword: this.keyword, url: url});
-            this.callData();
-        },
-        addDrag(map) {
-            // 비동기 처리로 인해서 값을 가지고 오지 못한다. => Promise 사용
-            let latlng = null;
-            let geocoder = new kakao.maps.services.Geocoder();
-            let that = this; // 핵중요!!!!!!!
-            kakao.maps.event.addListener(map, 'dragend', function() {
-                latlng = map.getCenter();
-                
-                const addressSearch = latlng => {
-                    return new Promise((resolve, reject) => {
-                        geocoder.coord2RegionCode(latlng.getLng(), latlng.getLat(), function(result, status) {
-                            if (status === kakao.maps.services.Status.OK) {
-                                resolve(result);
-                            } else {
-                                reject(status);
-                            }
-                        });
-                    })
+        const addressSearch = (latlng) => {
+          return new Promise((resolve, reject) => {
+            geocoder.coord2RegionCode(
+              latlng.getLng(),
+              latlng.getLat(),
+              function (result, status) {
+                if (status === kakao.maps.services.Status.OK) {
+                  resolve(result);
+                } else {
+                  reject(status);
                 }
-                (async () => {
-                    try {
-                        const result = await addressSearch(latlng);
-                       for (let index = 0; index < result.length; index++) {
-                            if (result[index].region_type === 'H') {
-                                // 동에서 숫자 지우기
-                                let si = result[index].region_1depth_name;
-                                let gugun = result[index].region_2depth_name;
-                                let dong = result[index].region_3depth_name;
-                                let arr = dong.split("");
-                                for (let j = 0; j < arr.length; j++) {
-                                    if (isNaN(arr[j])) continue;
-                                    arr.splice(j)
-                                    dong = arr.join('')
-                                }
+              }
+            );
+          });
+        };
+        (async () => {
+          try {
+            const result = await addressSearch(latlng);
+            for (let index = 0; index < result.length; index++) {
+              if (result[index].region_type === "H") {
+                // 동에서 숫자 지우기
+                let si = result[index].region_1depth_name;
+                let gugun = result[index].region_2depth_name;
+                let dong = result[index].region_3depth_name;
+                let arr = dong.split("");
+                for (let j = 0; j < arr.length; j++) {
+                  if (isNaN(arr[j])) continue;
+                  arr.splice(j);
+                  dong = arr.join("");
+                }
 
-                                let newAddress = si+" "+gugun+" "+dong;
-                                that.keyword = newAddress;
-                                that.getKeyword("");
-                                break;
-                            }
-                        }  
-                    } catch(e) {
-                        console.log(e);
-                    }
-                })();
+                let newAddress = si + " " + gugun + " " + dong;
+                that.keyword = newAddress;
+                that.getKeyword("");
+                break;
+              }
+            }
+          } catch (e) {
+            console.log(e);
+          }
+        })();
+      });
+    },
+    drawMarker(positions, map) {
+      for (var i = 0; i < positions.length; i++) {
+        // 마커 이미지 url 및 이미지 크기
+        var imageSize = new kakao.maps.Size(24, 35);
+        var imageSrc =
+          "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
 
-            })
-            
-            
-        },
-        drawMarker(positions, map) {
-            for (var i = 0; i < positions.length; i ++) {
-                // 마커 이미지 url 및 이미지 크기
-                var imageSize = new kakao.maps.Size(24, 35);
-                var imageSrc = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";     
-                
-                // 마커 이미지를 생성합니다
-                var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize); 
-                
-                // 마커를 생성합니다
-                new kakao.maps.Marker({
-                    map: map, // 마커를 표시할 지도
-                    position: positions[i].latlng, // 마커를 표시할 위치
-                    title : '헬로우', // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
-                    image : markerImage // 마커 이미지 
-                });
-	        }
-        },
-    }
-}
+        // 마커 이미지를 생성합니다
+        var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
 
+        // 마커를 생성합니다
+        new kakao.maps.Marker({
+          map: map, // 마커를 표시할 지도
+          position: positions[i].latlng, // 마커를 표시할 위치
+          title: "헬로우", // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
+          image: markerImage, // 마커 이미지
+        });
+      }
+    },
+  },
+};
 </script>
 
 <style>
@@ -278,52 +247,52 @@ export default {
         height: 12rem;
     }
 
-    .item-cell-img {
-        position:relative;
-        width: 40%;
-        height: 100%;
-        margin-right: 1em;
-        overflow: hidden;
-    }
+.item-cell-img {
+  position: relative;
+  width: 40%;
+  height: 100%;
+  margin-right: 1em;
+  overflow: hidden;
+}
 
-    .item-cell-img .item-icon {
-        position: relative;
-        top: 30px;
-        left: 100px;
-    }
+.item-cell-img .item-icon {
+  position: relative;
+  top: 30px;
+  left: 100px;
+}
 
-    .item-cell-img img {
-        width: 100%;
-        height: 100%;
-    }
+.item-cell-img img {
+  width: 100%;
+  height: 100%;
+}
 
-    .item-cell-img img:hover {
-        background: rgb(0,0,0,0.5);
-    }
+.item-cell-img img:hover {
+  background: rgb(0, 0, 0, 0.5);
+}
 
-    .item-cell-desc {
-        top:0;
-        width: 60%;
-        height: 180px;
-        vertical-align: top;
-        display: flex;
-        flex-direction:column;
-        justify-content: space-between;
-        padding: 1rem 0; 
-    }
+.item-cell-desc {
+  top: 0;
+  width: 60%;
+  height: 180px;
+  vertical-align: top;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem 0;
+}
 
-    .item-title {
-        font-size: 1.3rem;
-        font-weight: bolder;
-        text-decoration: none;
-        color: black;
-        overflow-x: hidden;
-    }
+.item-title {
+  font-size: 1.3rem;
+  font-weight: bolder;
+  text-decoration: none;
+  color: black;
+  overflow-x: hidden;
+}
 
-    .item-cell-desc p {
-        margin: 0;
-        font-weight: 600;
-    }
+.item-cell-desc p {
+  margin: 0;
+  font-weight: 600;
+}
 
     .item-cell-desc .rlp {
         margin-left: 0.3rem;
