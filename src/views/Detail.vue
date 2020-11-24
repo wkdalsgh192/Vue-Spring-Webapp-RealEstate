@@ -7,8 +7,8 @@
         <br /><br />
         <v-card>
           <v-card-title class="justify-center">
-            <h2 class="indigo--text darken-3">
-              <strong>Notice Detail</strong>
+            <h2 class="indigo--text darken-3" style="font-weight: bold">
+              Notice Detail
             </h2>
           </v-card-title>
           <v-card-text>

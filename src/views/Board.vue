@@ -5,7 +5,9 @@
       <v-divider></v-divider>
       <v-card>
         <v-card-title class="justify-center">
-          <h2 class="indigo--text darken-3"><strong>N o t i c e</strong></h2>
+          <h2 class="indigo--text darken-3" style="font-weight: bold">
+            N o t i c e
+          </h2>
         </v-card-title>
       </v-card>
       <br />

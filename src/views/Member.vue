@@ -16,8 +16,8 @@
         <br /><br />
         <v-card>
           <v-card-title class="justify-center">
-            <h2 class="indigo--text darken-3">
-              <strong>회원 정보 관리</strong>
+            <h2 class="indigo--text darken-3" style="font-weight: bold">
+              회원 정보 관리
             </h2>
           </v-card-title>
           <v-card-text>

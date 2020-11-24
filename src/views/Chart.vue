@@ -6,8 +6,8 @@
       <br /><br />
       <v-card>
         <v-card-title class="justify-center">
-          <h2 class="indigo--text darken-3">
-            <strong> Corona trend</strong>
+          <h2 class="indigo--text darken-3" style="font-weight: bold">
+            Corona trend
           </h2>
         </v-card-title>
         <section class="container">

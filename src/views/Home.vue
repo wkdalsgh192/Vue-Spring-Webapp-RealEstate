@@ -2,12 +2,14 @@
   <div class="home">
     <br /><br /><br /><br />
     <div>
-      <h2 id="h2" class="text-center">
+      <h2 id="h2" class="text-center" style="font-weight: bold">
         <span class="indigo--text darken-3">어떤 동네, 어떤 방</span>
         에서
       </h2>
       <br />
-      <h2 id="h2" class="text-center">살고 싶으신가요?</h2>
+      <h2 id="h2" class="text-center" style="font-weight: bold">
+        살고 싶으신가요?
+      </h2>
       <br /><br />
       <v-divider></v-divider>
       <br /><br />

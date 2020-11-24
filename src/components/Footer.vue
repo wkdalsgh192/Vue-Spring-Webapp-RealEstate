@@ -2,9 +2,7 @@
   <v-footer dark padless>
     <v-card class="flex" flat tile>
       <v-card-title class="indigo darken-3">
-        <strong class="subheading"
-          >Get connected with us on social networks!</strong
-        >
+        Get connected with us on social networks!
 
         <v-spacer></v-spacer>
 
@@ -16,7 +14,7 @@
       </v-card-title>
 
       <v-card-text class="py-2 white--text text-center">
-        {{ new Date().getFullYear() }} — <strong>Made by Song & Jang</strong>
+        {{ new Date().getFullYear() }} — Made by Song & Jang
       </v-card-text>
     </v-card>
   </v-footer>
