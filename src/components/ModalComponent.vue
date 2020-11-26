@@ -11,13 +11,13 @@
             dark
             v-bind="attrs"
             v-on="on"
-            @click="checkPrice"
+            @click="checkPrice(modalTitle)"
             class="rlp"
         >
-          실거래가
+          {{ modalTitle }}
         </v-btn>
       </template>
-      <v-card>
+      <v-card v-if="modalTitle === '실거래가'">
         <v-card-title class="headline">
           {{this.aptName}} 실거래가 동향
         </v-card-title>
@@ -26,11 +26,32 @@
                 <div class="columns">
                     <div class="column">
                     <line-chart class="line-chart" v-if="labels !== null" :labels="labels" :data="numData" :apt="aptName"></line-chart>
+                    
                     </div>
-                    <br /><br />
+                </div>
+            </section>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="green darken-1"
+            text
+            @click="dialog = false"
+          >
+            닫기
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+      <v-card v-else>
+        <v-card-title class="headline">
+          구별 선별 진료소 
+        </v-card-title>
+        <v-card-text>
+            <section class="container">
+                <div class="columns">
                     <div class="column">
-                    <h1 class="indigo--text darken-3">코로나 지역별 확진자</h1>
-                    <bar-chart></bar-chart>
+                    
+                    <bar-chart class="line-chart" v-if="labels !== null" :labels="labels" :data="numData" :apt="aptName"></bar-chart>
                     </div>
                 </div>
             </section>
@@ -59,11 +80,12 @@ import BarChart from "@/components/BarChart.vue";
     name: "VueChartJS",
     components: {
         LineChart,
-        BarChart,
+        BarChart
     },
     // 아파트 이름을 전달한다.
     props: {
-      aptName : String
+      aptName : String,
+      modalTitle : String,
     },
     data () {
       return {
@@ -74,8 +96,10 @@ import BarChart from "@/components/BarChart.vue";
       }
     },
     methods : {
-      checkPrice() {
-        axios.get('http://localhost:8000/happyhouse/map/house/check/'+this.aptName)
+      checkPrice(elem) {
+        console.log(elem)
+        if (elem === '실거래가') {
+          axios.get('http://localhost:8000/happyhouse/map/house/check/'+this.aptName)
             .then((response) => {
               let date = new Array();
               let price = new Array();
@@ -87,6 +111,13 @@ import BarChart from "@/components/BarChart.vue";
               this.labels = date;
               this.numData = price;
             })
+        } else {
+          let gu = ['종로구', '마포구', '서대문구', '금정구'];
+          let cnt = [10, 8, 8, 13];
+          this.labels = gu;
+          this.numData = cnt;
+        }
+        
       }
     }
   }

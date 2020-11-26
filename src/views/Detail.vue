@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div style="width: calc(100% - 200px); margin: 0 auto">
+    <div style="width: calc(100% - 800px); margin: 0px auto">
       <template v-if="notice">
         <br /><br />
         <v-divider></v-divider>
@@ -27,15 +27,16 @@
                 </v-col>
                 <v-col cols="3"> </v-col>
                 <v-col cols="3"> </v-col>
-                <v-col cols="6">
+                <v-col cols="6" style="height:120px;">
                   <h3>글내용</h3>
-                  <v-form style="height: 150px">
-                    <v-textarea
+                  <v-form >
+                    <v-textarea 
                       v-model="notice.content"
                       counter
                       maxlength="50"
                       full-width
                       single-line
+                      height="45px"
                     ></v-textarea>
                   </v-form>
 
@@ -88,15 +89,24 @@
         </v-card>
       </template>
     </div>
-    <br /><br />
+    <br />
     <v-divider></v-divider>
+    <sub-header></sub-header>
+    <br><br><br>
+    <Footer></Footer>
   </div>
 </template>
 
 <script>
 import axios from "axios";
 import { mapGetters } from "vuex";
+import SubHeader from '@/components/SubHeader.vue';
+import Footer from "@/components/Footer.vue";
 export default {
+  components: {
+    SubHeader,
+    Footer,
+  },
   data: () => ({
     notice: { no: "", title: "", date: "", content: "", member_id: "" },
     no: "",
@@ -155,3 +165,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+  h3 {
+    display: inline-block;
+  }
+</style>

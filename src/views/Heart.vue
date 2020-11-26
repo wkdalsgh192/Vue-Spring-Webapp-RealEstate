@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div style="width: calc(100% - 500px); margin: 0 auto">
+    <div style="width: calc(100% - 500px); height: 100vh; margin: 0 auto; padding-top:150px">
       <template>
         <br />
         <div class="text-center" style="font-size: 30px; color: #3f51b5">
@@ -23,50 +23,22 @@
           </v-card-title>
         </v-card>
         <br />
-        <!-- :key="i" v-for="(data, i) in datas" -->
-        <!-- <v-carousel height="600px">
-          <v-carousel-item
-            v-for="(item, i) in items"
-            :key="i"
-            :src="datas[random()]"
-            reverse-transition="fade-transition"
-            transition="fade-transition"
-          >
-            <v-row class="fill-height" justify="center">
-              <v-col>
-                <v-list two-line>
-                  <v-list-item>
-                    <v-list-item-content>
-                      <v-list-item-title
-                        >{{ item.apt_name }} 아파트</v-list-item-title
-                      >
-                      <v-list-item-subtitle
-                        >가격 : {{ item.price }} (만원)</v-list-item-subtitle
-                      >
-                      <v-list-item-subtitle
-                        >평수 : {{ item.area }}</v-list-item-subtitle
-                      >
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list>
-              </v-col>
-            </v-row></v-carousel-item
-          >
-        </v-carousel> -->
         <!-- type="is-danger" -->
         <b-carousel-list :data="items" :items-to-show="4">
           <template slot="item" slot-scope="list">
             <div class="card">
               <div class="card-image">
                 <figure class="image is-5by4">
-                  <img :src="datas[list.no % 4]" />
+                  <img :src="datas[list.no % 4]" @click="showList(list)" />
                 </figure>
               </div>
               <div class="card-content">
                 <div class="content">
-                  <h2 class="title is-6">{{ list.apt_name }}</h2>
-                  <h2 class="subtitle is-7">{{ list.price }} (만원)</h2>
-                  <h2 class="subtitle is-7">{{ list.area }} 평형</h2>
+                  <h2>{{ list.apt_name }}</h2>
+                  <h4>{{ list.price }} (만원)</h4>
+                  <h4>{{ list.area }} 평형</h4>
+                  <h4>{{ list.last_update }} 일</h4>
+                  <v-icon @click="del(list.no)">mdi-trash-can-outline</v-icon>
                   <div class="field is-grouped"></div>
                 </div>
               </div>
@@ -76,6 +48,8 @@
         <br /><br />
       </template>
     </div>
+    <sub-header></sub-header>
+    <Footer></Footer>
   </div>
 </template>
 
@@ -85,7 +59,13 @@ import Vue from "vue";
 import Buefy from "buefy";
 import "buefy/dist/buefy.css";
 Vue.use(Buefy);
+import SubHeader from '@/components/SubHeader.vue';
+import Footer from "@/components/Footer.vue";
 export default {
+  components: {
+    SubHeader,
+    Footer,
+  },
   data() {
     return {
       datas: [
@@ -104,20 +84,35 @@ export default {
       )
       .then(({ data }) => {
         this.items = data;
+        console.log(data);
       })
       .catch(() => {
         alert("에러 발생");
       });
   },
   methods: {
+    del(no) {
+      axios
+        .delete(`http://localhost:8000/happyhouse/heart/delete/${no}`)
+        .then(({ data }) => {
+          alert("삭제 성공");
+          if (data == "success") {
+            this.$router.replace("/member");
+          } else alert("삭제 실패");
+        });
+    },
+
     random() {
       return Math.floor(Math.random() * 4);
     },
     movemember() {
       this.$router.replace("/member");
     },
+    showList(elem) {
+      console.log(elem);
+    }
   },
 };
 </script>
-<style scoped>
+<style>
 </style>

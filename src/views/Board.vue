@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div style="width: calc(100% - 200px); margin: 0 auto">
+    <div style="width: calc(100% - 200px); margin: 101px auto">
       <br /><br />
       <v-divider></v-divider>
       <v-card>
@@ -64,12 +64,21 @@
         등록된 공지가 없습니다.
       </div>
     </div>
+    <sub-header></sub-header>
+    <br><br><br><br><br><br><br><br><br>
+    <Footer></Footer>
   </div>
 </template>
 <script>
 import axios from "axios";
 import { mapGetters } from "vuex";
+import SubHeader from '@/components/SubHeader.vue';
+import Footer from "@/components/Footer.vue";
 export default {
+  components: {
+    SubHeader,
+    Footer,
+  },
   data: function () {
     return {
       items: [],
