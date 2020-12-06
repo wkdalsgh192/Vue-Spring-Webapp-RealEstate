@@ -1,21 +1,5 @@
 <template>
   <div class="home">
-    <div>
-      <img id="home-canvas" src='img/background2.jpg' alt="">
-    </div>
-    <div class="wrapper">
-      <div class="container-input">
-        <input list="searchRank" type="text" class="search-term" v-model="temp" ref="search" @keydown.enter="getKeyword" @keydown.once="makeRain">    
-          <button type="submit" class="submit-button">
-            <i class="fas fa-search"></i>
-          </button>
-        <!-- 여기에 추천 검색어가 들어간다. -->
-        <datalist id="searchRank">
-          <option>검색 TOP 5</option>
-          <option v-for = "item in items" :key="item.no">{{item.dong}}</option>
-        </datalist>
-      </div>
-    </div>
     <div class="wrapper back-row-toggle" id="raindrop" v-if="frontRow.length > 0">
       <div class="rain front-row" >
         <div v-for="n in frontRow.length" :key="n" v-html="frontRow[n]">
@@ -26,6 +10,42 @@
         <div v-for="n in backRow.length" :key="n+100" v-html="backRow[n]"></div>
       </div>
     </div>
+    <div>
+      <img id="home-canvas" src='img/background2.jpg' alt="">
+    </div>
+    <div class="wrapper">
+      <div class="container-input">
+        <input list="searchRank" type="text" class="search-term" v-model="temp" ref="search" @click="showRank = !showRank" @keydown.enter="getKeyword" @keydown.once="makeRain">    
+          <button type="submit" class="submit-button">
+            <i class="fas fa-search"></i>
+          </button>
+      
+      </div>
+      <!-- 여기에 추천 검색어가 들어간다. -->
+      <div v-show="showRank" class="container-rank">
+        <div class="rank">
+          <div class="rankList">
+            <h3>
+              <v-icon large style="color:red;">mdi-fire</v-icon>
+              요즘 인기있는 동네예요
+              <v-icon large style="color:red;">mdi-fire</v-icon>
+            </h3>
+            <p v-for="(item, index) in items" :key="item.no">
+              <span>{{index+1}}위 </span>
+              <a @click="selectRank">{{item.dong}}</a>
+              <v-icon v-if="index % 3 == index" style="color:red;">mdi-arrow-up-bold</v-icon>
+              <v-icon v-else style="color:blue;">mdi-arrow-down-bold</v-icon>
+            </p>
+          </div>
+          <div class="divider"></div>
+          <!-- 차트가 들어가는 곳 -->
+          <div class="rankChart">
+            <bar-chart class="bar-chart" id="home" v-if="chart !== null" :labelName="chart.labelName" :labels="chart.labels" :data="chart.data" :colors="chart.colors"></bar-chart>
+          </div> 
+        </div>
+      </div>
+    </div>
+    
     <Header></Header>
     <Footer></Footer>
   </div>
@@ -35,32 +55,29 @@
 import index from "../store";
 import Header from "@/components/Header.vue";
 import Footer from "@/components/Footer.vue";
+import BarChart from "@/components/BarChart.vue";
 import Axios from 'axios';
+import pattern from 'patternomaly';
 
 export default {
   index,
   components: {
     Header,
     Footer,
+    BarChart,
   },
   data() {
     return {
       temp: "",
-      isEmpty: false,
+      showRank: false,
       frontRow: new Array(),
       backRow: new Array(),
       items: [],
+      chart: null,
     };
   },
   created() {
-    Axios
-    .get("http://localhost:8000/happyhouse/heart/search")
-    .then(({data}) => {
-      this.items = data;
-    })
-    .catch(() =>{
-      alert("에러 발생");
-    })
+    
   },
   computed: {
     // 빈 칸이면 false
@@ -72,16 +89,40 @@ export default {
     },
   },
   mounted() {
-    // this.$refs.search.focus();
+    Axios
+    .get("http://localhost:8000/happyhouse/heart/search")
+    .then((response) => {
+      // console.log(data);
+      this.items = response.data;
+
+      // 차트로 변환하기
+      let obj = new Object(),
+          labels = new Array(),
+          data = new Array();
+      response.data.forEach((elem) => {
+        labels.push(elem['dong']);
+        data.push(elem['cnt']);
+      })
+      obj.labelName = '조회수';
+      obj.labels = labels;
+      obj.data = data;
+      obj.colors = [pattern.draw('square', '#1f77b4'),pattern.draw('circle', '#ff7f0e'),pattern.draw('diamond', '#2ca02c'),pattern.draw('zigzag-horizontal', '#17becf'),pattern.draw('triangle', 'rgb(255, 99, 132, 0.4)')];
+      this.chart = obj;
+      console.log(obj);
+    })
+    .catch(() =>{
+      alert("에러 발생");
+    })
   },
   methods: {
+    selectRank(e) {
+      this.temp = e.target.innerHTML;
+    },
     getKeyword() {
-      if (!this.isEmpty) {
-        this.$store.dispatch("GET_KEYWORD", {
+      this.$store.dispatch("GET_KEYWORD", {
           keyword: this.temp,
           url: "/search",
-        });
-      }
+      });
     },
     makeRain() {
       let rain = document.querySelectorAll('.rain');
@@ -113,11 +154,14 @@ export default {
 };
 </script>
 
-<style>
-#h2 {
-  font-family: "Noto Sans KR", sans-serif;
-  font-size: 30px;
+<style scoped>
+.bar-chart#home {
+  padding-top:30px;
+  width: 270px;
+  height:270px
 }
+</style>
+<style>
 
 .home {
   overflow: hidden;
@@ -133,6 +177,94 @@ export default {
   top: 200px;
   width: 100vw;
   opacity:0.9;
+}
+
+
+.container-input {
+  display: flex;
+  flex-direction: row;
+  width: 50%;
+  margin: 0 auto;
+}
+
+.search-term {
+  width: 100%;
+  background-color:white;
+  border: 1px solid transparent;
+  border-right: none;
+  padding: 5px 5px 5px 25px;
+  height: 54px;
+  border-radius: 50px 0 0 50px;
+  outline: none;
+  font-size:1rem;
+}
+
+.submit-button {
+  width: 70px;
+  height: 54px;
+  background: white;
+  text-align: center;
+  border-radius: 0 50px 50px 0;
+  border: 2px solid transparent;
+  cursor: pointer;
+  font-size: 25px;
+  border-left: none;
+}
+
+.fa-search {
+  border-radius: 50px;
+  padding: 0.5rem;
+  color: #f59e92;
+}
+
+/* 추천검색어 컨테이너 */
+.container-rank {
+  position:relative;
+  width: 50%;
+  height: 320px;
+  margin:5px auto;
+  border: 1px solid rgb(221, 221, 221);
+  border-radius: 25px;
+  background: white;
+  z-index: 10;
+}
+
+.rank {
+  max-width: 100%;
+  max-height: 100%;
+  display:flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 50px 50px;
+}
+
+.rankList, .rankChart {
+  max-width: 330px;
+  max-height: 330px;
+}
+
+.rankList h3 {
+  font-family: "Noto Sans KR", sans-serif;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.rankList p {
+  text-align : center;
+}
+
+.rankList a {
+  font-family: "Noto Sans KR", sans-serif;
+  color:rgb(102, 102, 102) !important;
+}
+
+.rankList a:hover {
+  color:black;
+}
+
+.divider {
+  height: 250px;
+  border: 0.5px solid #e6e6e6;
 }
 
 /* 비오는 효과를 주는 곳 */
@@ -234,59 +366,6 @@ export default {
   top: 90px;
   line-height: 12px;
   padding-top: 14px;
-}
-
-
-.container-input {
-  display: flex;
-  flex-direction: row;
-  width: 50%;
-  margin: 0 auto;
-}
-
-#searchRank {
-  width: 50%;
-  /* background-color:white;
-  border: 1px solid transparent;
-  border-right: none;
-  padding: 5px 5px 5px 25px;
-  height: 54px;
-  border-radius: 50px 0 0 50px;
-  outline: none;
-  font-size:1rem; */
-}
-
-.search-term {
-  /* max-width: 585px; */
-  width: 100%;
-  background-color:white;
-  border: 1px solid transparent;
-  border-right: none;
-  padding: 5px 5px 5px 25px;
-  height: 54px;
-  border-radius: 50px 0 0 50px;
-  outline: none;
-  font-size:1rem;
-}
-
-.submit-button {
-  width: 70px;
-  height: 54px;
-  background: white;
-  text-align: center;
-  border-radius: 0 50px 50px 0;
-  border: 2px solid transparent;
-  cursor: pointer;
-  font-size: 25px;
-  border-left: none;
-}
-
-
-
-.fa-search {
-  border-radius: 50px;
-  padding: 0.5rem;
-  color: coral;
 }
 </style>
 

@@ -264,7 +264,7 @@ export default {
 <style>
     #seg {
         position: fixed;
-        width: 425px;
+        width: 480px;
         height: 100vh;
         z-index: 10;
         background-color:white;

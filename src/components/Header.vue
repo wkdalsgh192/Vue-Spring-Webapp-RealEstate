@@ -4,7 +4,8 @@
       <router-link style="color: white" to="/"
           >
           <img src="img/logo2.png" style="width:150px;">
-          </router-link>
+      </router-link>
+      
     </div>
     <div class="header-items">
       <template v-if="getAccessToken">
@@ -230,6 +231,7 @@ export default {
     display:flex;
     justify-content:space-between;
     align-items:center;
+    margin-right: 30px;
   }
 
   header {

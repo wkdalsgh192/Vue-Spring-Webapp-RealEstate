@@ -295,11 +295,9 @@ export default {
 }
 
 .fa-search {
-  /* border: 1px solid coral; */
   border-radius: 50px;
   padding: 0.5rem;
-  color: coral;
-  /* background-color: coral; */
+  color: #f59e92;
 }
 h3, .v-btn__content {
   color:  black;

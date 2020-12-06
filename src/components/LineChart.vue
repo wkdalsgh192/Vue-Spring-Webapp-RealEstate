@@ -2,7 +2,7 @@
 import { Line } from "vue-chartjs";
 export default {
   extends: Line,
-  props: ["labels", "data", "apt"],
+  props: ["labels", "data"],
   data() {
     return {
       datacollection: {

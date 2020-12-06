@@ -19,14 +19,14 @@
       </template>
       <v-card v-if="modalTitle === '실거래가'">
         <v-card-title class="headline">
-          {{this.aptName}} 실거래가 동향
+          {{this.aptName}}
         </v-card-title>
+        <v-divider></v-divider>
         <v-card-text>
             <section class="container">
                 <div class="columns">
                     <div class="column">
-                    <line-chart class="line-chart" v-if="labels !== null" :labels="labels" :data="numData" :apt="aptName"></line-chart>
-                    
+                    <line-chart class="line-chart" v-if="chart !== null" :labels="chart.labels" :data="chart.data"></line-chart>
                     </div>
                 </div>
             </section>
@@ -44,14 +44,18 @@
       </v-card>
       <v-card v-else>
         <v-card-title class="headline">
-          구별 선별 진료소 
+          주변 정보
         </v-card-title>
+        <v-divider></v-divider>
         <v-card-text>
             <section class="container">
                 <div class="columns">
                     <div class="column">
-                    
-                    <bar-chart class="line-chart" v-if="labels !== null" :labels="labels" :data="numData" :apt="aptName"></bar-chart>
+                    <bar-chart class="bar-chart" id="main" v-if="chart !== null"
+                      :labelName="chart.labelName" :labels="chart.labels" :data="chart.data" :colors="chart.colors"></bar-chart>
+                    </div>
+                    <div class="column">
+                    <radar-chart class="rader-chart" width="300" height="300"></radar-chart>
                     </div>
                 </div>
             </section>
@@ -61,7 +65,7 @@
           <v-btn
             color="green darken-1"
             text
-            @click="dialog = false"
+            @click="dialog = false; chart=null;"
           >
             닫기
           </v-btn>
@@ -76,11 +80,13 @@
 import axios from "axios";
 import LineChart from "@/components/LineChart.vue";
 import BarChart from "@/components/BarChart.vue";
+import RadarChart from "@/components/RadarChart.vue";
   export default {
     name: "VueChartJS",
     components: {
         LineChart,
-        BarChart
+        BarChart,
+        RadarChart
     },
     // 아파트 이름을 전달한다.
     props: {
@@ -91,8 +97,7 @@ import BarChart from "@/components/BarChart.vue";
       return {
         isChart: false,
         dialog: false,
-        labels: null,
-        numData: null,
+        chart : null,
       }
     },
     methods : {
@@ -101,21 +106,24 @@ import BarChart from "@/components/BarChart.vue";
         if (elem === '실거래가') {
           axios.get('http://localhost:8000/happyhouse/map/house/check/'+this.aptName)
             .then((response) => {
+              let obj = new Object();
               let date = new Array();
               let price = new Array();
-              console.log(response.data);
               response.data.forEach((vo) => {
                 date.push(vo['deal_date']);
                 price.push(parseInt(vo['deal_amount']));
-              })
-              this.labels = date;
-              this.numData = price;
+              })  
+              obj.labels = date;
+              obj.data = price;
+              this.chart = obj;
             })
         } else {
-          let gu = ['종로구', '마포구', '서대문구', '금정구'];
-          let cnt = [10, 8, 8, 13];
-          this.labels = gu;
-          this.numData = cnt;
+          let obj = new Object();
+          obj.labelName = '구별 선별진료소';
+          obj.labels = ["강서구","서대문구","마포구","영등포구","관악구","용산구","중구","종로구","성북구","동대문구","강남구","서초구","송파구"];
+          obj.data = [3,8,5,3,6,1,7,4,2,6,4,3,2];
+          obj.colors = ["#3f51b5","#3f51b5","#3f51b5","#3f51b5","#3f51b5","#3f51b5","#3f51b5","coral","#3f51b5","#3f51b5","#3f51b5","#3f51b5","#3f51b5"];
+          this.chart = obj;
         }
         
       }
@@ -141,4 +149,8 @@ import BarChart from "@/components/BarChart.vue";
 .line-chart {
     height: 300px;
 }
+
+ .bar-chart#main {
+   height: 350px;
+ }
 </style>

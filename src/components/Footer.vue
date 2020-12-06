@@ -1,6 +1,6 @@
 <template>
   <div class="footer-bar">
-    {{ new Date().getFullYear() }} — Made by Song & Jang
+    {{ new Date().getFullYear() }} — Made by Song & Jang,   Illustrated by Gala Poliakova
   </div>
   <!-- <v-footer dark padless>
     <v-card class="flex" flat tile>
