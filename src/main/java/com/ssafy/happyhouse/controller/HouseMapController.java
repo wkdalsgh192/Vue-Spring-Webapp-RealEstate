@@ -35,40 +35,23 @@ public class HouseMapController extends HttpServlet {
 	@Autowired
 	private HouseMapService houseMapService; 
 	
-	@GetMapping(value= "/address", headers= {"Content-type=application/json"})
-	public List<SidoDto> searchSido() throws Exception {
-		return houseMapService.getSido();
-	}
-	
-	@GetMapping(value="/address/sido/{sido}", headers= {"Content-type=application/json"})
-	public List<GugunDto> searchGugun(@PathVariable("sido") String sido) throws Exception {
-		return houseMapService.getGugunInSido(sido);
-	}
 	
 	@GetMapping(value="/address/gugun/{gugun}", headers= {"Content-type=application/json"})
 	public List<HashMap<String, Object>> searchDong(@PathVariable("gugun") String gugun) throws Exception {
 		return houseMapService.getDongInGugun(gugun);
 	}
 	
-	@GetMapping(value="/house/deal/{dongcode}", headers= {"Content-type=application/json"})
-	public List<HouseDealDto> searchDongName(@PathVariable("dongcode") String dongcode) throws Exception {
-		return houseMapService.getDealInDong(dongcode);
-	}
-	
-//	@GetMapping(value="/house/info/{dongcode}", headers= {"Content-type=application/json"})
-//	public List<HouseInfoDto> searchApt(@PathVariable("dongcode") String dongcode) throws Exception {
-//		return houseMapService.getAptInDong(dongcode);
-//	}
-	
 	@GetMapping(value="/house/info/{address}", headers= {"Content-type=application/json"})
 	public List<HouseInfoDto> searchApt(@PathVariable("address") String address) throws Exception {
 		System.out.println(address);
-		return houseMapService.searchApt('%'+address+'%');
+		
+		List<HouseInfoDto> list = houseMapService.searchApt('%'+address+'%');
+		System.out.println(list.size());
+		return list;
 	}
 	
 	@PostMapping(value="/house/like", headers= {"Content-type=application/json"})
 	public ResponseEntity<Map<String, Object>> addLike(@RequestBody HouseLikeDto like) throws Exception {
-		System.out.println(like.toString());
 		Map<String, Object> resultMap = new HashMap<>();
 		String msg = "이미 추가된 매물입니다!";
 		HttpStatus status = null;
@@ -84,6 +67,11 @@ public class HouseMapController extends HttpServlet {
 			status = HttpStatus.INTERNAL_SERVER_ERROR;
 		}
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
+	}
+	
+	@GetMapping(value="/house/check/{apt_name}", headers= {"Content-type=application/json"})
+	public List<HouseDealDto> checkPrice(@PathVariable("apt_name") String apt_name) throws Exception {
+		return houseMapService.checkPrice(apt_name);
 	}
 
 }

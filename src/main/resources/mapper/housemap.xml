@@ -2,24 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.happyhouse.model.mapper.HouseMapMapper">
-	<select id="getSido" resultType="sido">
-	    <![CDATA[SELECT sido_code, sido_name FROM sidocode ORDER BY sido_code]]>
-	</select>
-	
-	<select id="getGugunInSido" resultType="gugun" parameterType="string">
-	    <![CDATA[SELECT gugun_code, gugun_name FROM guguncode WHERE SUBSTRING(gugun_code,1,2) = #{sido} ORDER BY gugun_name]]>
-	</select>
 	
 	<select id="getDongInGugun" resultType="HashMap" parameterType="string">
 	    <![CDATA[SELECT distinct dong, dongcode FROM dongcode WHERE substring(dongcode, 1, 5) = #{gugun} ORDER BY dong]]>
-	</select>
-
-	<select id="getAptInDong" resultType="houseinfo" parameterType="String">
-	    <![CDATA[SELECT no,dong,code,AptName,jibun,lat,lng FROM houseinfo WHERE code = #{dongcode} ORDER BY AptName]]>
-	</select>
-	  
-	<select id="getDealInDong" resultType="housedeal" parameterType="String">
-	    <![CDATA[SELECT no,dong,code,AptName, dealAmount, area, jibun FROM housedeal WHERE code = #{dongcode} ORDER BY AptName]]>
 	</select>
 	
 	<select id="searchApt" resultType="houseinfo" parameterType="String">
@@ -37,7 +22,12 @@
 	</select>
 	
 	<insert id="addLike" parameterType="houselike">
-		 <![CDATA[insert into interestarea values (#{id}, #{aptName}, #{price}, #{area}, #{lastUpdate});]]>
+		 <![CDATA[insert into interestarea (id, apt_name, price, area, last_update) values (#{id}, #{apt_name}, #{price}, #{area}, #{last_update});]]>
 	</insert>
+	
+	<select id="checkPrice" resultType="housedeal" parameterType="String">
+		<![CDATA[select no, dong, AptName apt_name, dealAmount deal_amount, date_format(str_to_date(concat(dealYear,'-',dealMonth,'-',dealDay), '%Y-%m-%d'), '%m-%d') as deal_date 
+		from housedeal where AptName = #{AptName} order by deal_date;]]>
+	</select>
 
 </mapper>

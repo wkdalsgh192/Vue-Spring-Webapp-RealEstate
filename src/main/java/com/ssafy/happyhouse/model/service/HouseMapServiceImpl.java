@@ -21,32 +21,11 @@ public class HouseMapServiceImpl implements HouseMapService {
 	@Autowired
 	private SqlSession sqlSession;
 	
-	@Override
-	public List<SidoDto> getSido() throws Exception {
-		List<SidoDto> list = sqlSession.getMapper(HouseMapMapper.class).getSido();
-		return list;
-	}
-
-	@Override
-	public List<GugunDto> getGugunInSido(String sido) throws Exception {
-		List<GugunDto> list = sqlSession.getMapper(HouseMapMapper.class).getGugunInSido(sido);
-		return list;
-	}
 
 	@Override
 	public List<HashMap<String, Object>> getDongInGugun(String gugun) throws Exception {
 		List<HashMap<String, Object>> list = sqlSession.getMapper(HouseMapMapper.class).getDongInGugun(gugun);
 		return list;
-	}
-
-	@Override
-	public List<HouseInfoDto> getAptInDong(String dongcode) throws Exception {
-		return sqlSession.getMapper(HouseMapMapper.class).getAptInDong(dongcode);
-	}
-	
-	@Override
-	public List<HouseDealDto> getDealInDong(String dongcode) throws Exception {
-		return sqlSession.getMapper(HouseMapMapper.class).getDealInDong(dongcode);
 	}
 
 	@Override
@@ -57,5 +36,10 @@ public class HouseMapServiceImpl implements HouseMapService {
 	@Override
 	public void addLike(HouseLikeDto houselike) throws Exception {
 		sqlSession.getMapper(HouseMapMapper.class).addLike(houselike);		
+	}
+	
+	@Override
+	public List<HouseDealDto> checkPrice(String apt_name) throws Exception {
+		return sqlSession.getMapper(HouseMapMapper.class).checkPrice(apt_name);
 	}
 }
