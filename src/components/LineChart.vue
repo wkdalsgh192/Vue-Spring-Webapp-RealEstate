@@ -2,7 +2,7 @@
 import { Line } from "vue-chartjs";
 export default {
   extends: Line,
-  props: ["labels", "data", "apt"],
+  props: ["labels", "data"],
   data() {
     return {
       datacollection: {
@@ -10,10 +10,11 @@ export default {
         datasets: [
           {
             label: "억 원",
-            backgroundColor: "#3f51b5",
+            backgroundColor: "transparent",
             pointBackgroundColor: "white",
-            borderWidth: 1,
-            pointBorderColor: "#3f51b5",
+            borderWidth: 3,
+            borderColor: "coral",
+            pointBorderColor: "coral",
             data: this.data,
           },
         ],
@@ -39,6 +40,8 @@ export default {
           ],
         },
         legend: {
+          align : 'end',
+          position: 'top',
           display: true,
         },
         responsive: true,

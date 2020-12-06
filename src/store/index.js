@@ -20,6 +20,9 @@ export default new Vuex.Store({
     getId(state) {
       return state.id;
     },
+    getKeyword(state) { 
+      return state.keyword;
+    }
   },
   mutations: {
     LOGIN(state, payload) {

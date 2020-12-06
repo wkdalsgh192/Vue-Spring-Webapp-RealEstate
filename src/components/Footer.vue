@@ -1,29 +1,30 @@
 <template>
-  <v-footer dark padless>
+  <div class="footer-bar">
+    {{ new Date().getFullYear() }} — Made by Song & Jang,   Illustrated by Gala Poliakova
+  </div>
+  <!-- <v-footer dark padless>
     <v-card class="flex" flat tile>
-      <v-card-title class="indigo darken-3">
-        Get connected with us on social networks!
-
-        <v-spacer></v-spacer>
-
-        <v-btn v-for="icon in icons" :key="icon" class="mx-4" dark icon>
-          <v-icon size="24px">
-            {{ icon }}
-          </v-icon>
-        </v-btn>
-      </v-card-title>
-
       <v-card-text class="py-2 white--text text-center">
         {{ new Date().getFullYear() }} — Made by Song & Jang
       </v-card-text>
     </v-card>
-  </v-footer>
+  </v-footer> -->
 </template>
 
 <script>
 export default {
-  data: () => ({
-    icons: ["mdi-facebook", "mdi-twitter", "mdi-linkedin", "mdi-instagram"],
-  }),
 };
 </script>
+
+<style scoped>
+  .footer-bar {
+    position:relative;
+    top: -36px;
+    width: 100vw;
+    height: 30px;
+    background-color: #1e1e1e;
+    text-align:center;
+    color: white;
+    /* padding: 0.5rem 0; */
+  }
+</style>

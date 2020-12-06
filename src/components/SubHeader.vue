@@ -3,13 +3,22 @@
     <div>
       <router-link style="color: white" to="/"
           >
-          <img src="img/logo2.png" style="width:150px;">
-      </router-link>
-      
+          <img src="img/logo1.png" style="width:100px;">
+          </router-link>
+    </div>
+    <div class="wrapper">
+      <div class="container-input">
+        <input type="text" class="search-term" v-model="keyword" @keydown.enter="getKeyword('')">    
+          <button type="submit" class="submit-button">
+            <i class="fas fa-search"></i>
+          </button>
+        <!-- 여기에 추천 검색어가 들어간다. -->
+        <datalist></datalist>
+      </div>
     </div>
     <div class="header-items">
       <template v-if="getAccessToken">
-        <v-avatar variant="primary" id="avatar"> </v-avatar><div class="getid"><h3>{{ getId }}님 환영합니다.</h3></div>
+        <v-avatar variant="primary"> </v-avatar>{{ getId }}님 환영합니다.
         <v-btn :to="{ name: 'member' }" text :color="btnColor">
           <h3>MyPage</h3>
         </v-btn>
@@ -21,7 +30,7 @@
         </v-btn>
       </template>
       <template v-else-if="this.res == 1">
-        <v-avatar variant="primary"> </v-avatar> Mino 님 환영합니다.
+        <v-avatar variant="primary"> </v-avatar> Kakao Guest님 환영합니다.
         <v-btn :to="{ name: 'board' }" text :color="btnColor">
           <h3>Notice</h3>
         </v-btn>
@@ -33,7 +42,7 @@
         <v-dialog v-model="l_close" persistent max-width="600px">
           <template v-slot:activator="{ on, attrs }">
             <v-btn text :color="btnColor" dark v-bind="attrs" v-on="on">
-              Login
+              <h3>Login</h3>
             </v-btn>
           </template>
           <v-card>
@@ -84,12 +93,12 @@
         <v-dialog v-model="close" persistent max-width="600px">
           <template v-slot:activator="{ on, attrs }">
             <v-btn text :color="btnColor" dark v-bind="attrs" v-on="on">
-              SINGUP
+              <h3>SignUp</h3>
             </v-btn>
           </template>
           <v-card>
             <v-card-title>
-              <span class="headline">SingUp</span>
+              <span class="headline">SignUp</span>
             </v-card-title>
             <v-card-text>
               <v-container>
@@ -133,10 +142,12 @@
   </div>
 </template>
 <script>
+import index from '../store';
 import axios from "axios";
 import { mapGetters } from "vuex";
 
 export default {
+  index,
   data: () => ({
     collapseOnScroll: true,
     btnColor: "white",
@@ -155,9 +166,11 @@ export default {
     message: "",
     client_id: "144400cb3aff71d7d6c539363528967b",
     redirect_uri: "http://localhost:8080",
+    keyword: '',
   }),
   created() {
     this.res = localStorage.getItem("count");
+    this.keyword = this.$store.state.keyword;
   },
   computed: {
     nextRoute() {
@@ -210,6 +223,13 @@ export default {
         });
       this.l_close = false;
     },
+    getKeyword(url) {
+      console.log(123);
+      this.$store.dispatch("GET_KEYWORD", {
+          keyword: this.keyword,
+          url: url,
+        });
+    },
   },
 };
 </script>
@@ -220,28 +240,67 @@ export default {
     top:0;
     left:0;
     width:100vw;
+    height: 5rem;
     display:flex;
     justify-content: space-between;
-    background: transparent;
+    background: white;
     padding: 1rem 1rem;
     z-index:10;
+    box-shadow: rgba(0, 0, 0, 0.08) 0px 1px 12px;
   }
 
   .header-items {
     display:flex;
     justify-content:space-between;
     align-items:center;
-    margin-right: 30px;
   }
 
-  header {
-    background: transparent;
-  }
-  #avatar{
-    color:white;
-  }
-  .getid{
-    display:inline-block;
-    color: white;
-  }
+  .wrapper {
+  position:relative;
+  top: 0;
+  width: 50%;
+  opacity:0.9;
+}
+
+.container-input {
+  display: flex;
+  flex-direction: row;
+  width: 50%;
+  margin: 0 auto;
+}
+
+.search-term {
+  /* max-width: 585px; */
+  width: 100%;
+  background-color:white;
+  border: 1px solid #e6e6e6;
+  border-right: none;
+  padding: 5px 5px 5px 25px;
+  height: 54px;
+  border-radius: 50px 0 0 50px;
+  outline: none;
+  font-size:1rem;
+}
+
+.submit-button {
+  width: 70px;
+  height: 54px;
+  background: white;
+  text-align: center;
+  border-radius: 0 50px 50px 0;
+  border: 1px solid #e6e6e6;
+  cursor: pointer;
+  font-size: 25px;
+  border-left: none;
+}
+
+.fa-search {
+  border-radius: 50px;
+  padding: 0.5rem;
+  color: #f59e92;
+}
+h3, .v-btn__content {
+  color:  black;
+}
+
 </style>

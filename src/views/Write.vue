@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div style="width: calc(100% - 200px); margin: 0 auto">
+    <div style="width: calc(100% - 200px); margin: 67px auto">
       <template>
         <br /><br />
-        <v-divider></v-divider>
+        
         <br /><br />
         <v-card>
           <v-card-title class="justify-center">
@@ -72,11 +72,19 @@
       </template>
     </div>
     <br /><br />
+    <sub-header></sub-header>
+    <Footer></Footer>
   </div>
 </template>
 <script>
 import axios from "axios";
+import SubHeader from '@/components/SubHeader.vue';
+import Footer from "@/components/Footer.vue";
 export default {
+  components: {
+    SubHeader,
+    Footer,
+  },
   data: () => ({
     member_id: "",
     title: "",
