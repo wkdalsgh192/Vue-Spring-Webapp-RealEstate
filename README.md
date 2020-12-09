@@ -24,13 +24,11 @@ Happy House, which is an online real estate agent platform, was created by two y
 
 # UI/UX
 ## Design
-We set our main color to light pink for better visual convenience. So, tens of logo designs fitted our brans strategy were suggested with the help of Tailer Brands Studio and the current design was finally chosen throguh delicate reviews. Along that, the main page was also changed to the amazing illustration of <b>Gala Poliakova</b>, which looks more natural than just a google-style simple design. She is an great illustrator working for a meditation app company. If you love it, I am 100% sure that her other works would also catch your eyes. Check them out right now on the link. // 링크 들어가는 부분
+We set our main color to light pink for better visual convenience. So, tens of logo designs fitted our brans strategy were suggested with the help of Tailer Brands Studio and the current design was finally chosen throguh delicate reviews. Along that, the main page was also changed to the amazing illustration of <b>Gala Poliakova</b>, which looks more natural than just a google-style simple design. She is an great illustrator working for a meditation app company. If you love it, I am 100% sure that her other works would also catch your eyes. Check them out right now on the link. -> https://www.artstation.com/galapoliakova
 
 ## Interaction
 Static image is not cool any more to attract the young clients' attention. We added some fun interactions for them to think it is so cool that they want to keep using. Among them, the one highlighted here is to show the weather of an user's current location. For example, when it is raining in the place where a user lives and he/she begins typing something on a search bar, it starts raining on our main page, too. For real! Here's how it looks. 
-// 이미지 들어가는 부분
-
-I got a referrence in CodePen and re-created it in VueJs. Please see the link attached if interested.  
+I got a referrence in CodePen and re-created it in VueJs. Please see the link attached if interested. -> https://codepen.io/arickle/pen/XKjMZY  
 
 # Frontend : Vue
   We used the Vue framwork for frontend. Before that, we made web pages to .jsp, that was totally undesiable since all the html and css codes were mingled with java codes. After the installation of Vue CLI, however, we could make our messy files and codes well-organized. 
@@ -106,7 +104,72 @@ kakao.maps.event.addListener(map, 'dragend', function() {
 ```
 
 # Backend : Spring Boot
-## Login
+Spring Boot was used for its simple usage and multiple advantages such as autoconfiguration, starter POMs. To make a Spring MVC-based REST application, Spring framework itself is good enough but there are lots of xmls for matching dependencies and configuration. Spring Boot takes away all these pains and lets you write the code that matters, which means that Java development with Spring is very simplified. Among various functions, we would like to show you several key things that must be implemented in a server side to work as a webpage.
+## Login / Logout - JWT
+Log in/out functions are requisites to make other services and if an user is using our service, his or her id and password must be stored somewhere to remain logged in even when he or she move to a different page. For that, the basic method is to use Cookie and Session. It's way easier to implement and more straightforward than other methods. However, it has a crucial problem called CORS error, which usually occurs when the origin of client is different with that of server. What does it mean? it means that you violated the same-origin policy that restricts how a document or script loaded from one origin can interact with a resource from another origin. If you want to make a Single-Page Application(SPA), you will get the error inevitably because client and server has its own domain respectively. Moreover, you need to consider mobile environments. That's why we used the JWT. 
+Unlike using cookie and session, this token-based authentification does not store user's data in neither client nor server. The token created becomes the data as itself and is used in any environment due to the JSON-format communication. Then, how is it created at first? Here's the sample code we wrote.
+```java
+@RequestMapping(value = "/login", method = RequestMethod.POST)
+private ResponseEntity<Map<String, Object>> login(@RequestBody MemberDto member) throws ServletException, IOException {
+    Map<String, Object> resultMap = new HashMap<>();
+    HttpStatus status = null;
+    try {
+        MemberDto loginUser = memberService.login(member);
+        if(loginUser != null) {
+            String token = jwtService.create(loginUser);
+            logger.trace("login token info : {}", token);
+            resultMap.put("auth-token", token);
+            resultMap.put("id", loginUser.getId());
+            status = HttpStatus.ACCEPTED;
+        }else {
+            resultMap.put("message", "로그인 실패");
+            status = HttpStatus.ACCEPTED;
+        }
+    }catch(Exception e) {
+        logger.error("Login failed : {}", e);
+        resultMap.put("message", e.getMessage());
+        status = HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+    return new ResponseEntity<Map<String, Object>>(resultMap, status);
+}
+```
+
+# DB : MyBatis & MySql
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.happyhouse.model.mapper.HouseMapMapper">
+	
+	<select id="getDongInGugun" resultType="HashMap" parameterType="string">
+	    <![CDATA[SELECT distinct dong, dongcode FROM dongcode WHERE substring(dongcode, 1, 5) = #{gugun} ORDER BY dong]]>
+	</select>
+	
+	<select id="searchApt" resultType="houseinfo" parameterType="String">
+		<![CDATA[
+		select no, dong, code, info.AptName, jibun, lat, lng, price, area, date 
+		from 
+			(select AptName, dealAmount price, area, str_to_date(concat(dealYear,"-",dealMonth,"-",dealDay), '%Y-%m-%d') as date 
+			from housedeal group by AptName order by date desc) as info 
+		inner join 
+			(select no, dong, code, AptName, jibun, lat, lng 
+			from houseinfo info
+			where info.code in (select base.code from baseaddress base where concat(city,' ',gugun,' ',dong) like #{ address })) as deal 
+		on info.AptName = deal.AptName;
+		]]>
+	</select>
+	
+	<insert id="addLike" parameterType="houselike">
+		 <![CDATA[insert into interestarea (id, apt_name, price, area, last_update) values (#{id}, #{apt_name}, #{price}, #{area}, #{last_update});]]>
+	</insert>
+	
+	<select id="checkPrice" resultType="housedeal" parameterType="String">
+		<![CDATA[select no, dong, AptName apt_name, dealAmount deal_amount, date_format(str_to_date(concat(dealYear,'-',dealMonth,'-',dealDay), '%Y-%m-%d'), '%m-%d') as deal_date 
+		from housedeal where AptName = #{AptName} order by deal_date;]]>
+	</select>
+</mapper>
+```
+
 
 
 ## Project setup
