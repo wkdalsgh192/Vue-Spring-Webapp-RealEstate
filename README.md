@@ -19,7 +19,7 @@
 # Service Introduction
 Happy House, which is an online real estate agent platform, was created by two young and talented Korean developers in December 2020. At the target of young generation who wants to be cool and hip, this has been made to provide them the most useful experience in looking for various kinds of studios, apartments that they would live in. For that, expectation and anxiety that come from a new living place were set as main keywords that we should deal with in our website. In other words, we wanted them to be more hopeful and less nervous by our numerous services. Because it is a prototype, it will not get updated unless there are major issues. If you have any questions, please shoot an email to deakse2@gmail.com.
 <p align="center">
-    <img width="700" align="center" src="" alt="demo"/>
+    <img width="800" align="center" src="https://user-images.githubusercontent.com/50606172/101655344-dba43d00-3a84-11eb-9358-7a3943edcc5c.gif"/>
  </p>
 
 # UI/UX
