@@ -10,18 +10,21 @@
 - Service Introduction
 - UI/UX Design
 - Frontend : Vue
-  - Open API(Kakao map)
   - RESTful API
+  - Kakao Platform API
 - Backend :Spring Boot
   - JWT
 - DB : MySql
   
 # Service Introduction
-Happy House, which is an online real estate agent platform, was created by two young and talented Korean developers in December 2020. At the target of young generation who wants to be cool and hip, this has been made to provide them the most useful experience in looking for various kinds of studios, apartments that they would live in. For that, expectation and anxiety that come from a new living place were set as main keywords that we should deal with in our website. In other words, we wanted them to be more hopeful and less nervous by our numerous services. Because it is a prototype, it will not get updated unless there are major issues. If you have any questions, please shoot an email to deakse@gmail.com.
+Happy House, which is an online real estate agent platform, was created by two young and talented Korean developers in December 2020. At the target of young generation who wants to be cool and hip, this has been made to provide them the most useful experience in looking for various kinds of studios, apartments that they would live in. For that, expectation and anxiety that come from a new living place were set as main keywords that we should deal with in our website. In other words, we wanted them to be more hopeful and less nervous by our numerous services. Because it is a prototype, it will not get updated unless there are major issues. If you have any questions, please shoot an email to deakse2@gmail.com.
+<p align="center">
+    <img width="700" align="center" src="" alt="demo"/>
+ </p>
 
 # UI/UX
 ## Design
-We set our main color to light pink for better visual convenience. So, tens of logo designs fitted our brans strategy were suggested with the help of Tailer Brands Studio and the current design was finally chosen throguh delicate reviews. Along that, the main page was also changed to the amazing illustration of <b>Gala Poliakova</b>, which looks more natural than just a google-style simple design. She is an great illustrator working for a meditation app company. If you love it, I am 100% sure that her other works would also catch your eyes. Check them out right now on the link.
+We set our main color to light pink for better visual convenience. So, tens of logo designs fitted our brans strategy were suggested with the help of Tailer Brands Studio and the current design was finally chosen throguh delicate reviews. Along that, the main page was also changed to the amazing illustration of <b>Gala Poliakova</b>, which looks more natural than just a google-style simple design. She is an great illustrator working for a meditation app company. If you love it, I am 100% sure that her other works would also catch your eyes. Check them out right now on the link. // 링크 들어가는 부분
 
 ## Interaction
 Static image is not cool any more to attract the young clients' attention. We added some fun interactions for them to think it is so cool that they want to keep using. Among them, the one highlighted here is to show the weather of an user's current location. For example, when it is raining in the place where a user lives and he/she begins typing something on a search bar, it starts raining on our main page, too. For real! Here's how it looks. 
@@ -57,9 +60,53 @@ Axios
     })
 ```
 
-## Kakao Map API (Geolocation API)
-
+## Kakao Platform API (Geolocation API)
 In order to show users where the places are located, we used Kakao Map API, which is way convenient in terms of customizing and pricing than Google Map API. It provides various types of libraries for users to be able to add directly on the map rendered. They can add/remove markers and move map by drag to find other area. Calling the Vue instace in the event listener was very sticky since whenever 'this' keyword was called on console, it indicated the event listener, not the instance, due to the asynchronous communication. For that, I used some tricks; <b> that : this, Promise </b>
+```javascript
+let latlng = null;
+let geocoder = new kakao.maps.services.Geocoder();
+let that = this; // Super Important!!!!
+kakao.maps.event.addListener(map, 'dragend', function() {
+    latlng = map.getCenter();
+
+    const addressSearch = latlng => {
+        return new Promise((resolve, reject) => {
+            geocoder.coord2RegionCode(latlng.getLng(), latlng.getLat(), function(result, status) {
+                if (status === kakao.maps.services.Status.OK) {
+                    resolve(result);
+                } else reject(status);
+            });
+        })
+    }
+    (async () => {
+        try {
+            const result = await addressSearch(latlng);
+           for (let index = 0; index < result.length; index++) {
+                if (result[index].region_type === 'H') {
+                    let si = result[index].region_1depth_name,
+                        gugun = result[index].region_2depth_name,
+                        dong = result[index].region_3depth_name;
+                    let arr = dong.split("");
+                    for (let j = 0; j < arr.length; j++) {
+                        if (isNaN(arr[j])) continue;
+                        arr.splice(j)
+                        dong = arr.join('')
+                    }
+                    let newAddress = si+" "+gugun+" "+dong;
+                    that.keyword = newAddress;
+                    that.getKeyword("");
+                    break;
+                }
+            }  
+        } catch(e) {
+            console.log(e);
+        }
+    })();
+})
+```
+
+# Backend : Spring Boot
+## Login
 
 
 ## Project setup
